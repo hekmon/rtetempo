@@ -1,0 +1,33 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Ce Client ID est déjà configuré"
+        },
+        "error": {
+            "network_error": "Une erreur réseau est survenue, merci de vérifier les logs",
+            "oauth_error": "Une erreur OAuth2 est survenue, merci de vérifier les logs",
+            "http_client_error": "Une erreur côté client est survenue, merci de vérifier les logs",
+            "http_server_error": "Une erreur côté serveur est survenue, merci de vérifier les logs",
+            "http_unexpected_error": "Une erreur HTTP inattendue est survenue, merci de vérifier les logs"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "client_id": "Client ID",
+                    "client_secret": "Client Secret"
+                },
+                "description": "Veuillez remplir vos [identifiants d'application](https://data.rte-france.com/group/guest/apps) RTE API."
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "adjusted_days": "Ajuster les évènements du calendrier à l'heure réelle du changement (6h du matin)"
+                },
+                "title": "RTE Tempo - Options"
+            }
+        }
+    }
+}

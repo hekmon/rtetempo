@@ -1,2 +1,2 @@
-# rtetempo
-RTE Tempo days calendar for Home Assistant
+# RTE Tempo
+RTE Tempo days calendar and sensors for Home Assistant

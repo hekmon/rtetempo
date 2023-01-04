@@ -1,0 +1,33 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Integration is already configured"
+        },
+        "error": {
+            "network_error": "A network error occured, please check the logs",
+            "oauth_error": "An OAuth2 related error occured, please check the logs",
+            "http_client_error": "A client side error occured, please check the logs",
+            "http_server_error": "A server side error occured, please check the logs",
+            "http_unexpected_error": "An unexpected HTTP error occured, please check the logs"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "client_id": "Client ID",
+                    "client_secret": "Client Secret"
+                },
+                "description": "Please fill in your RTE API [Application credentials](https://data.rte-france.com/group/guest/apps)"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "adjusted_days": "Adjust calendar events to use real hours (06:00) instead of all day"
+                },
+                "title": "RTE Tempo - Options"
+            }
+        }
+    }
+}
