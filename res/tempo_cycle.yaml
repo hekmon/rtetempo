@@ -1,0 +1,15 @@
+type: entities
+entities:
+  - entity: sensor.rte_tempo_cycle_jours_restants_bleu
+    secondary_info: last-changed
+    name: Restant 🔵
+  - entity: sensor.rte_tempo_cycle_jours_restants_blanc
+    secondary_info: last-changed
+    name: Restant ⚪
+  - entity: sensor.rte_tempo_cycle_jours_restants_rouge
+    secondary_info: last-changed
+    name: Restant 🔴
+  - entity: sensor.rte_tempo_cycle_prochaine_reinitialisation
+    secondary_info: none
+    name: Prochaine cycle
+title: Tempo - Cycle
