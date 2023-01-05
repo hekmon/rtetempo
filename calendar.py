@@ -28,6 +28,7 @@ from .const import (
     SENSOR_COLOR_BLUE_NAME,
     SENSOR_COLOR_RED_EMOJI,
     SENSOR_COLOR_RED_NAME,
+    SENSOR_COLOR_UNKNOWN_EMOJI,
     SENSOR_COLOR_WHITE_EMOJI,
     SENSOR_COLOR_WHITE_NAME,
 )
@@ -160,19 +161,32 @@ def forge_calendar_event(tempo_day: TempoDay):
     return CalendarEvent(
         start=tempo_day.Start,
         end=tempo_day.End,
-        summary=forge_calendar_event_summary(tempo_day.Value),
-        description=f"Mis à jour le {tempo_day.Updated}",
+        summary=get_value_emoji(tempo_day.Value),
+        description=forge_calendar_event_description(tempo_day),
         location="France",
         uid=f"{DOMAIN}_{tempo_day.Start.year}_{tempo_day.Start.month}_{tempo_day.Start.day}",
     )
 
 
-def forge_calendar_event_summary(value: str) -> str:
-    """Forge a calendar event summary from a tempo day value."""
+def get_value_emoji(value) -> str:
+    """Get corresponding emoji for tempo value."""
     if value == API_VALUE_RED:
-        return f"Jour Tempo {SENSOR_COLOR_RED_NAME} {SENSOR_COLOR_RED_EMOJI}"
+        return str({SENSOR_COLOR_RED_EMOJI})
     if value == API_VALUE_WHITE:
-        return f"Jour Tempo {SENSOR_COLOR_WHITE_NAME} {SENSOR_COLOR_WHITE_EMOJI}"
+        return str({SENSOR_COLOR_WHITE_EMOJI})
     if value == API_VALUE_BLUE:
-        return f"Jour Tempo {SENSOR_COLOR_BLUE_NAME} {SENSOR_COLOR_BLUE_EMOJI}"
-    return f"Jour Tempo inconnu ({value})"
+        return str({SENSOR_COLOR_BLUE_EMOJI})
+    return str({SENSOR_COLOR_UNKNOWN_EMOJI})
+
+
+def forge_calendar_event_description(tempo_day: TempoDay) -> str:
+    """Forge a calendar event summary from a tempo day value."""
+    if tempo_day.Value == API_VALUE_RED:
+        return f"Jour Tempo {SENSOR_COLOR_RED_NAME}\nMis à jour le {tempo_day.Updated}"
+    if tempo_day.Value == API_VALUE_WHITE:
+        return (
+            f"Jour Tempo {SENSOR_COLOR_WHITE_NAME}\nMis à jour le {tempo_day.Updated}"
+        )
+    if tempo_day.Value == API_VALUE_BLUE:
+        return f"Jour Tempo {SENSOR_COLOR_BLUE_NAME}\nMis à jour le {tempo_day.Updated}"
+    return f"Jour Tempo inconnu ({tempo_day.Value})\nMis à jour le {tempo_day.Updated}"

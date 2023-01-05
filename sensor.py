@@ -87,7 +87,7 @@ class CurrentColor(SensorEntity):
     _attr_has_entity_name = True
     _attr_attribution = API_ATTRIBUTION
     # Sensor properties
-    # _attr_device_class = SensorDeviceClass.ENUM  # will have to wait until next release
+    _attr_device_class = SensorDeviceClass.ENUM
     _attr_icon = "mdi:palette"
 
     def __init__(self, config_id: str, api_worker: APIWorker, emoji: bool) -> None:
@@ -96,21 +96,21 @@ class CurrentColor(SensorEntity):
         if emoji:
             self._attr_name = "Couleur actuelle (emoji)"
             self._attr_unique_id = f"{DOMAIN}_{config_id}_current_color_emoji"
-            # self._attr_options = [
-            #     SENSOR_COLOR_BLUE_EMOJI,
-            #     SENSOR_COLOR_WHITE_EMOJI,
-            #     SENSOR_COLOR_RED_EMOJI,
-            #     SENSOR_COLOR_UNKNOWN_EMOJI,
-            # ]  # will have to wait until next release
+            self._attr_options = [
+                SENSOR_COLOR_BLUE_EMOJI,
+                SENSOR_COLOR_WHITE_EMOJI,
+                SENSOR_COLOR_RED_EMOJI,
+                SENSOR_COLOR_UNKNOWN_EMOJI,
+            ]
         else:
             self._attr_name = "Couleur actuelle"
             self._attr_unique_id = f"{DOMAIN}_{config_id}_current_color"
-            # self._attr_options = [
-            #     SENSOR_COLOR_BLUE_NAME,
-            #     SENSOR_COLOR_WHITE_NAME,
-            #     SENSOR_COLOR_RED_NAME,
-            #     SENSOR_COLOR_UNKNOWN_NAME,
-            # ]  # will have to wait until next release
+            self._attr_options = [
+                SENSOR_COLOR_BLUE_NAME,
+                SENSOR_COLOR_WHITE_NAME,
+                SENSOR_COLOR_RED_NAME,
+                SENSOR_COLOR_UNKNOWN_NAME,
+            ]
         # Sensor entity properties
         self._attr_native_value: str | None = None
         # RTE Tempo Calendar entity properties
@@ -130,7 +130,7 @@ class CurrentColor(SensorEntity):
         )
 
     @callback
-    def update(self):
+    def update(self) -> None:
         """Update the value of the sensor from the thread object memory cache."""
         localized_now = datetime.datetime.now(FRANCE_TZ)
         for tempo_day in self._api_worker.get_adjusted_days():
@@ -154,7 +154,7 @@ class NextColor(SensorEntity):
     _attr_has_entity_name = True
     _attr_attribution = API_ATTRIBUTION
     # Sensor properties
-    # _attr_device_class = SensorDeviceClass.ENUM  # will have to wait until next release
+    _attr_device_class = SensorDeviceClass.ENUM
     _attr_icon = "mdi:palette"
 
     def __init__(self, config_id: str, api_worker: APIWorker, emoji: bool) -> None:
@@ -163,21 +163,21 @@ class NextColor(SensorEntity):
         if emoji:
             self._attr_name = "Prochaine couleur (emoji)"
             self._attr_unique_id = f"{DOMAIN}_{config_id}_next_color_emoji"
-            # self._attr_options = [
-            #     SENSOR_COLOR_BLUE_EMOJI,
-            #     SENSOR_COLOR_WHITE_EMOJI,
-            #     SENSOR_COLOR_RED_EMOJI,
-            #     SENSOR_COLOR_UNKNOWN_EMOJI,
-            # ]  # will have to wait until next release
+            self._attr_options = [
+                SENSOR_COLOR_BLUE_EMOJI,
+                SENSOR_COLOR_WHITE_EMOJI,
+                SENSOR_COLOR_RED_EMOJI,
+                SENSOR_COLOR_UNKNOWN_EMOJI,
+            ]
         else:
             self._attr_name = "Prochaine couleur"
             self._attr_unique_id = f"{DOMAIN}_{config_id}_next_color"
-            # self._attr_options = [
-            #     SENSOR_COLOR_BLUE_NAME,
-            #     SENSOR_COLOR_WHITE_NAME,
-            #     SENSOR_COLOR_RED_NAME,
-            #     SENSOR_COLOR_UNKNOWN_NAME,
-            # ]  # will have to wait until next release
+            self._attr_options = [
+                SENSOR_COLOR_BLUE_NAME,
+                SENSOR_COLOR_WHITE_NAME,
+                SENSOR_COLOR_RED_NAME,
+                SENSOR_COLOR_UNKNOWN_NAME,
+            ]
         # Sensor entity properties
         self._attr_native_value: str | None = None
         # RTE Tempo Calendar entity properties
@@ -197,7 +197,7 @@ class NextColor(SensorEntity):
         )
 
     @callback
-    def update(self):
+    def update(self) -> None:
         """Update the value of the sensor from the thread object memory cache."""
         localized_now = datetime.datetime.now(FRANCE_TZ)
         for tempo_day in self._api_worker.get_adjusted_days():
@@ -273,7 +273,7 @@ class NextColorTime(SensorEntity):
         )
 
     @callback
-    def update(self):
+    def update(self) -> None:
         """Update the value of the sensor from the thread object memory cache."""
         localized_now = datetime.datetime.now(FRANCE_TZ)
         if localized_now.hour >= 6:
@@ -338,7 +338,7 @@ class DaysLeft(SensorEntity):
         )
 
     @callback
-    def update(self):
+    def update(self) -> None:
         """Update the value of the sensor from the thread object memory cache."""
         # First compute the number of days this cycle has (handles leap year)
         today = datetime.datetime.today()
@@ -428,7 +428,7 @@ class DaysUsed(SensorEntity):
         )
 
     @callback
-    def update(self):
+    def update(self) -> None:
         """Update the value of the sensor from the thread object memory cache."""
         # First compute the number of days this cycle has (handles leap year)
         today = datetime.datetime.today()
@@ -497,7 +497,7 @@ class NextCycleTime(SensorEntity):
         )
 
     @callback
-    def update(self):
+    def update(self) -> None:
         """Update the value of the sensor from the thread object memory cache."""
         today = datetime.datetime.today()
         if today.month >= CYCLE_START_MONTH and today.day >= CYCLE_START_DAY:
