@@ -57,7 +57,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             )
             errors["base"] = "network_error"
         except OAuth2Error as oauth_error:
-            _LOGGER.error("Application validation failed: oauth error: %s", oauth_error)
+            _LOGGER.error(
+                "Application validation failed: oauth error: %s", oauth_error)
             errors["base"] = "oauth_error"
         except BadRequest as http_error:
             _LOGGER.error(
@@ -65,7 +66,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             )
             errors["base"] = "http_client_error"
         except ServerError as http_error:
-            _LOGGER.error("Application validation failed: server error: %s", http_error)
+            _LOGGER.error(
+                "Application validation failed: server error: %s", http_error)
             errors["base"] = "http_server_error"
         except UnexpectedError as http_error:
             _LOGGER.error(
@@ -110,7 +112,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 {
                     vol.Required(
                         OPTION_ADJUSTED_DAYS,
-                        default=self.config_entry.options.get(OPTION_ADJUSTED_DAYS),
+                        default=self.config_entry.options.get(
+                            OPTION_ADJUSTED_DAYS),
                     ): bool
                 }
             ),
