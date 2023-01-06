@@ -171,22 +171,22 @@ def forge_calendar_event(tempo_day: TempoDay):
 def get_value_emoji(value) -> str:
     """Get corresponding emoji for tempo value."""
     if value == API_VALUE_RED:
-        return str({SENSOR_COLOR_RED_EMOJI})
+        return SENSOR_COLOR_RED_EMOJI
     if value == API_VALUE_WHITE:
-        return str({SENSOR_COLOR_WHITE_EMOJI})
+        return SENSOR_COLOR_WHITE_EMOJI
     if value == API_VALUE_BLUE:
-        return str({SENSOR_COLOR_BLUE_EMOJI})
-    return str({SENSOR_COLOR_UNKNOWN_EMOJI})
+        return SENSOR_COLOR_BLUE_EMOJI
+    return SENSOR_COLOR_UNKNOWN_EMOJI
 
 
 def forge_calendar_event_description(tempo_day: TempoDay) -> str:
     """Forge a calendar event summary from a tempo day value."""
     if tempo_day.Value == API_VALUE_RED:
-        return f"Jour Tempo {SENSOR_COLOR_RED_NAME}\nMis à jour le {tempo_day.Updated}"
+        return f"Jour Tempo {SENSOR_COLOR_RED_NAME}, mis à jour le {tempo_day.Updated}"
     if tempo_day.Value == API_VALUE_WHITE:
         return (
-            f"Jour Tempo {SENSOR_COLOR_WHITE_NAME}\nMis à jour le {tempo_day.Updated}"
+            f"Jour Tempo {SENSOR_COLOR_WHITE_NAME}, mis à jour le {tempo_day.Updated}"
         )
     if tempo_day.Value == API_VALUE_BLUE:
-        return f"Jour Tempo {SENSOR_COLOR_BLUE_NAME}\nMis à jour le {tempo_day.Updated}"
-    return f"Jour Tempo inconnu ({tempo_day.Value})\nMis à jour le {tempo_day.Updated}"
+        return f"Jour Tempo {SENSOR_COLOR_BLUE_NAME}, mis à jour le {tempo_day.Updated}"
+    return f"Jour Tempo inconnu ({tempo_day.Value}), mis à jour le {tempo_day.Updated}"

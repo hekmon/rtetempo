@@ -125,9 +125,9 @@ class APIWorker(threading.Thread):
         )
         diff = data_end - localized_today
         _LOGGER.debug(
-            "Computing wait time based on today(%s) - data_end(%s) = diff(%s)",
-            localized_now,
+            "Computing wait time based on data_end(%s) - today(%s) = diff(%s)",
             data_end,
+            localized_now,
             diff,
         )
         if diff.days == 2:
@@ -153,6 +153,7 @@ class APIWorker(threading.Thread):
                     month=localized_now.month,
                     day=localized_now.day,
                     hour=HOUR_OF_CHANGE,
+                    second=1,  # workaround for multiples requests spamming API at 5:59:59... because of imprecise wait time
                     tzinfo=localized_now.tzinfo,
                 )
                 wait_time = next_call - localized_now
@@ -172,11 +173,8 @@ class APIWorker(threading.Thread):
             # weird, should not happen
             wait_time = datetime.timedelta(hours=1)
             _LOGGER.warning(
-                "Unexpected delta encountered between today and last result, waiting %s as fallback: %s - %s = %s",
+                "Unexpected delta encountered between today and last result, waiting %s as fallback",
                 wait_time,
-                data_end,
-                localized_today,
-                diff,
             )
         # all good
         return wait_time
