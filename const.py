@@ -33,10 +33,10 @@ SENSOR_COLOR_UNKNOWN_EMOJI = "❓"
 # API
 
 FRANCE_TZ = ZoneInfo("Europe/Paris")
-API_DOMAIN = "https://digital.iservices.rte-france.com"
-API_TOKEN_ENDPOINT = f"{API_DOMAIN}/token/oauth"
+API_DOMAIN = "digital.iservices.rte-france.com"
+API_TOKEN_ENDPOINT = f"https://{API_DOMAIN}/token/oauth"
 API_TEMPO_ENDPOINT = (
-    f"{API_DOMAIN}/open_api/tempo_like_supply_contract/v1/tempo_like_calendars"
+    f"https://{API_DOMAIN}/open_api/tempo_like_supply_contract/v1/tempo_like_calendars"
 )
 API_REQ_TIMEOUT = 3
 API_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
