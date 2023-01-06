@@ -283,8 +283,16 @@ class APIWorker(threading.Thread):
         # Save data in memory
         self._tempo_days_time = tempo_days_time
         self._tempo_days_date = time_days_date
-        # Return results end date in order for caller to compute next call time
-        return parse_rte_api_datetime(payload[API_KEY_RESULTS][API_KEY_END])
+        # Return results last end date in order for caller to compute next call time
+        if len(self._tempo_days_date) > 0:
+            newest_result = self._tempo_days_date[0].End
+            return datetime.datetime(
+                year=newest_result.year,
+                month=newest_result.month,
+                day=newest_result.day,
+                tzinfo=FRANCE_TZ,
+            ) - datetime.timedelta(hours=HOUR_OF_CHANGE)
+        return None
 
 
 def adjust_tempo_time(date: datetime.datetime) -> datetime.datetime:
