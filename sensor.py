@@ -59,7 +59,7 @@ async def async_setup_entry(
             config_entry.title,
         )
         return
-    # Wait request timeout to let API worker get first batch of data before initializing calendar
+    # Wait request timeout to let API worker get first batch of data before initializing sensors
     await asyncio.sleep(API_REQ_TIMEOUT)
     # Init sensors
     sensors = [

@@ -64,7 +64,7 @@ class APIWorker(threading.Thread):
         self._tempo_days_date: list[TempoDay] = []
         self.adjusted_days: bool = adjusted_days
         # Init parent thread class
-        super().__init__(name="RTE Tempo Calendar API Worker")
+        super().__init__(name="RTE Tempo API Worker")
 
     def get_calendar_days(self) -> list[TempoDay]:
         """Get the tempo days suited for calendar."""
@@ -125,13 +125,13 @@ class APIWorker(threading.Thread):
         )
         diff = data_end - localized_today
         _LOGGER.debug(
-            "computing wait time based on today(%s) - data_end(%s) = diff(%s)",
+            "Computing wait time based on today(%s) - data_end(%s) = diff(%s)",
             localized_now,
             data_end,
             diff,
         )
         if diff.days == 2:
-            # wait until next day
+            # we have next day color, wait until next change
             tomorrow = localized_now + datetime.timedelta(days=1)
             next_call = datetime.datetime(
                 year=tomorrow.year,
@@ -147,11 +147,27 @@ class APIWorker(threading.Thread):
             )
         elif diff.days == 1:
             # we do not have next day color yet
-            wait_time = datetime.timedelta(minutes=30)
-            _LOGGER.debug(
-                "We do not have next day color yet, retrying soon (wait time is %s)",
-                wait_time,
-            )
+            if localized_now.hour < 6:
+                next_call = datetime.datetime(
+                    year=localized_now.year,
+                    month=localized_now.month,
+                    day=localized_now.day,
+                    hour=HOUR_OF_CHANGE,
+                    tzinfo=localized_now.tzinfo,
+                )
+                wait_time = next_call - localized_now
+                _LOGGER.debug(
+                    "We do not have next day color yet, waiting hour of day change at %sh (wait time is %s)",
+                    HOUR_OF_CHANGE,
+                    wait_time,
+                )
+            else:
+                wait_time = datetime.timedelta(minutes=30)
+                _LOGGER.debug(
+                    "We do not have next day color yet and hour of change (%sh) is already past, retrying soon (wait time is %s)",
+                    HOUR_OF_CHANGE,
+                    wait_time,
+                )
         else:
             # weird, should not happen
             wait_time = datetime.timedelta(hours=1)
@@ -291,7 +307,7 @@ class APIWorker(threading.Thread):
                 month=newest_result.month,
                 day=newest_result.day,
                 tzinfo=FRANCE_TZ,
-            ) - datetime.timedelta(hours=HOUR_OF_CHANGE)
+            )
         return None
 
 
