@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import datetime
 import logging
+import random
 import threading
 from typing import NamedTuple
 
@@ -141,6 +142,9 @@ class APIWorker(threading.Thread):
                 tzinfo=localized_now.tzinfo,
             )
             wait_time = next_call - localized_now
+            wait_time = datetime.timedelta(
+                seconds=random.randrange(wait_time.seconds, wait_time.seconds + 900)
+            )
             _LOGGER.info(
                 "We got next day color, waiting until tomorrow to get futur next day color (wait time is %s)",
                 wait_time,
@@ -157,6 +161,9 @@ class APIWorker(threading.Thread):
                     tzinfo=localized_now.tzinfo,
                 )
                 wait_time = next_call - localized_now
+                wait_time = datetime.timedelta(
+                    seconds=random.randrange(wait_time.seconds, wait_time.seconds + 900)
+                )
                 _LOGGER.debug(
                     "We do not have next day color yet, waiting hour of day change at %sh (wait time is %s)",
                     HOUR_OF_CHANGE,
@@ -164,6 +171,11 @@ class APIWorker(threading.Thread):
                 )
             else:
                 wait_time = datetime.timedelta(minutes=30)
+                wait_time = datetime.timedelta(
+                    seconds=random.randrange(
+                        int(wait_time.seconds * 5 / 6), int(wait_time.seconds * 7 / 6)
+                    )
+                )
                 _LOGGER.debug(
                     "We do not have next day color yet and hour of change (%sh) is already past, retrying soon (wait time is %s)",
                     HOUR_OF_CHANGE,
@@ -172,6 +184,11 @@ class APIWorker(threading.Thread):
         else:
             # weird, should not happen
             wait_time = datetime.timedelta(hours=1)
+            wait_time = datetime.timedelta(
+                seconds=random.randrange(
+                    int(wait_time.seconds * 5 / 6), int(wait_time.seconds * 7 / 6)
+                )
+            )
             _LOGGER.warning(
                 "Unexpected delta encountered between today and last result, waiting %s as fallback",
                 wait_time,
