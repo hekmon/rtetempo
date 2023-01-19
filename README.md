@@ -36,7 +36,7 @@ Redémarrez votre Home Assistant.
 
 ### Configuration de l'intégration
 
-Une fois l'intégration installée, rendez-vous dans la page des intégrations d'home assistant et recherchez `RTE Tempo`. L'assistant d'installation vous demandera l'`ID Client` et l'`ID Secret` de votre application précédemment créee.
+Une fois l'intégration installée, rendez-vous dans la page des intégrations d'home assistant et recherchez `RTE Tempo`. L'assistant d'installation vous demandera l'`ID Client` et l'`ID Secret` de votre application précédemment créée.
 
 ## Exemples de cartes (lovelace)
 
