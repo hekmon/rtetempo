@@ -5,17 +5,17 @@ Cette extension vous permet d'obtenir les infos [Tempo](https://www.services-rte
 Elle intègre dans Home Assistant plusieurs éléments:
 
 * un calendrier sur un an (avec la possibilité de passer les évènements en heures réèlles)
-* des sondes de la couleur actuelle et celle du lendemain en texte et en emoji
-* des sondes comptants les jours passés et futurs de chaque couleurs
-* des sondes permettant de connaître la date et l'heure (et donc le temps restant) du prochain changement de couleur mais aussi du cycle en cours
+* des capteurs de la couleur actuelle et celle du lendemain en texte et en emoji
+* des capteurs comptants les jours passés et futurs de chaque couleurs
+* des capteurs permettant de connaître la date et l'heure (et donc le temps restant) du prochain changement de couleur mais aussi du cycle en cours
 
 ### Exemples
 
-[Sondes](https://github.com/hekmon/rtetempo/raw/main/res/rtetempo_svc.png) & [Calendrier](https://github.com/hekmon/rtetempo/raw/main/res/rtetempo_calendar.png)
+[Service et Capteurs](https://github.com/hekmon/rtetempo/raw/main/res/rtetempo_svc.png) & [Calendrier](https://github.com/hekmon/rtetempo/raw/main/res/rtetempo_calendar.png)
 
 ## Installation
 
-Certaines sondes sont de type `enum` afin de faciliter leur utilisation dans des automatisations. Cette fonctionnalitée de Home Assistant ayant été introduite à la version `2023.1.0`, assurez-vous de ne pas avoir un Home Assistant plus ancien avant l'installation de cette intégration.
+Certaines capteurs sont de type `enum` afin de faciliter leur utilisation dans des automatisations. Cette fonctionnalitée de Home Assistant ayant été introduite à la version `2023.1.0`, assurez-vous de ne pas avoir un Home Assistant plus ancien avant l'installation de cette intégration.
 
 ### Créer une application d'accès à l'API de RTE
 

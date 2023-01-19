@@ -365,7 +365,7 @@ def handle_api_errors(response: requests.Response):
                 response.status_code,
                 f"{payload[API_KEY_ERROR]}: {payload[API_KEY_ERROR_DESC]}",
             )
-        except requests.JSONDecodeError as exc:
+        except requests.JcapteurcodeError as exc:
             raise BadRequest(
                 response.status_code, f"Failed to decode JSON payload: {response.text}"
             ) from exc
@@ -395,7 +395,7 @@ def handle_api_errors(response: requests.Response):
                 response.status_code,
                 f"{payload[API_KEY_ERROR]}: {payload[API_KEY_ERROR_DESC]}",
             )
-        except requests.JSONDecodeError as exc:
+        except requests.JcapteurcodeError as exc:
             raise ServerError(
                 response.status_code, f"Failed to decode JSON payload: {response.text}"
             ) from exc
