@@ -182,11 +182,9 @@ def get_value_emoji(value) -> str:
 def forge_calendar_event_description(tempo_day: TempoDay) -> str:
     """Forge a calendar event summary from a tempo day value."""
     if tempo_day.Value == API_VALUE_RED:
-        return f"Jour Tempo {SENSOR_COLOR_RED_NAME}, mis à jour le {tempo_day.Updated}"
+        return f"Jour Tempo {SENSOR_COLOR_RED_NAME}"
     if tempo_day.Value == API_VALUE_WHITE:
-        return (
-            f"Jour Tempo {SENSOR_COLOR_WHITE_NAME}, mis à jour le {tempo_day.Updated}"
-        )
+        return f"Jour Tempo {SENSOR_COLOR_WHITE_NAME}"
     if tempo_day.Value == API_VALUE_BLUE:
-        return f"Jour Tempo {SENSOR_COLOR_BLUE_NAME}, mis à jour le {tempo_day.Updated}"
-    return f"Jour Tempo inconnu ({tempo_day.Value}), mis à jour le {tempo_day.Updated}"
+        return f"Jour Tempo {SENSOR_COLOR_BLUE_NAME}"
+    return f"Jour Tempo inconnu ({tempo_day.Value})"
