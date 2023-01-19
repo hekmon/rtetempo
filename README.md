@@ -9,8 +9,9 @@ Elle intègre dans Home Assistant plusieurs éléments:
 * des sondes comptants les jours passés et futurs de chaque couleurs
 * des sondes permettant de connaître la date et l'heure (et donc le temps restant) du prochain changement de couleur mais aussi du cycle en cours
 
---> exemple des sondes
---> exemple du calendrier
+### Exemples
+
+[Sondes](https://github.com/hekmon/rtetempo/raw/main/res/rtetempo_svc.png) & [Calendrier](https://github.com/hekmon/rtetempo/raw/main/res/rtetempo_calendar.png)
 
 ## Installation
 
@@ -36,3 +37,8 @@ Redémarrez votre Home Assistant.
 ### Configuration de l'intégration
 
 Une fois l'intégration installée, rendez-vous dans la page des intégrations d'home assistant et recherchez `RTE Tempo`. L'assistant d'installation vous demandera l'`ID Client` et l'`ID Secret` de votre application précédemment créee.
+
+## Exemples de cartes (lovelace)
+
+* Couleur du jour et du lendemain ([rendu](https://github.com/hekmon/rtetempo/raw/main/res/lovelace_colors.png), [code](https://github.com/hekmon/rtetempo/blob/main/res/tempo.yaml))
+* Nombre de jours restants sur le cycle ([rendu](https://github.com/hekmon/rtetempo/raw/main/res/lovelace_cycle.png), [code](https://github.com/hekmon/rtetempo/blob/main/res/tempo_cycle.yaml))
