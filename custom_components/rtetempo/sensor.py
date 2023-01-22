@@ -249,7 +249,7 @@ class NextColorTime(SensorEntity):
 
     # Generic properties
     _attr_has_entity_name = True
-    _attr_name = "Prochaine Couleur (changement)"
+    _attr_name = "Prochaine couleur (changement)"
     # Sensor properties
     _attr_device_class = SensorDeviceClass.TIMESTAMP
 
