@@ -10,7 +10,7 @@ from homeassistant.core import HomeAssistant
 from .api_worker import APIWorker
 from .const import CONFIG_CLIEND_SECRET, CONFIG_CLIENT_ID, DOMAIN, OPTION_ADJUSTED_DAYS
 
-PLATFORMS: list[Platform] = [Platform.CALENDAR, Platform.SENSOR]
+PLATFORMS: list[Platform] = [Platform.BINARY_SENSOR, Platform.CALENDAR, Platform.SENSOR]
 
 _LOGGER = logging.getLogger(__name__)
 

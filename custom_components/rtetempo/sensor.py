@@ -27,6 +27,7 @@ from .const import (
     DOMAIN,
     FRANCE_TZ,
     HOUR_OF_CHANGE,
+    OFF_PEAK_START,
     SENSOR_COLOR_BLUE_EMOJI,
     SENSOR_COLOR_BLUE_NAME,
     SENSOR_COLOR_RED_EMOJI,
@@ -75,6 +76,7 @@ async def async_setup_entry(
         DaysUsed(config_entry.entry_id, api_worker, API_VALUE_WHITE),
         DaysUsed(config_entry.entry_id, api_worker, API_VALUE_RED),
         NextCycleTime(config_entry.entry_id),
+        OffPeakTime(config_entry.entry_id),
     ]
     # Add the entities to HA
     async_add_entities(sensors, True)
@@ -247,8 +249,7 @@ class NextColorTime(SensorEntity):
 
     # Generic properties
     _attr_has_entity_name = True
-    _attr_attribution = API_ATTRIBUTION
-    _attr_name = "Prochain changement de couleur"
+    _attr_name = "Prochaine Couleur (changement)"
     # Sensor properties
     _attr_device_class = SensorDeviceClass.TIMESTAMP
 
@@ -276,7 +277,7 @@ class NextColorTime(SensorEntity):
     def update(self) -> None:
         """Update the value of the sensor from the thread object memory cache."""
         localized_now = datetime.datetime.now(FRANCE_TZ)
-        if localized_now.hour >= 6:
+        if localized_now.hour >= HOUR_OF_CHANGE:
             tomorrow = localized_now + datetime.timedelta(days=1)
             self._attr_native_value = datetime.datetime(
                 year=tomorrow.year,
@@ -341,20 +342,24 @@ class DaysLeft(SensorEntity):
     def update(self) -> None:
         """Update the value of the sensor from the thread object memory cache."""
         # First compute the number of days this cycle has (handles leap year)
-        today = datetime.datetime.today()
-        if today.month < CYCLE_START_MONTH:
+        localized_now = datetime.datetime.now(tz=FRANCE_TZ)
+        if localized_now.month < CYCLE_START_MONTH:
             cycle_start = datetime.date(
-                year=today.year - 1, month=CYCLE_START_MONTH, day=CYCLE_START_DAY
+                year=localized_now.year - 1,
+                month=CYCLE_START_MONTH,
+                day=CYCLE_START_DAY,
             )
             cycle_end = datetime.date(
-                year=today.year, month=CYCLE_START_MONTH, day=CYCLE_START_DAY
+                year=localized_now.year, month=CYCLE_START_MONTH, day=CYCLE_START_DAY
             )
         else:
             cycle_start = datetime.date(
-                year=today.year, month=CYCLE_START_MONTH, day=CYCLE_START_DAY
+                year=localized_now.year, month=CYCLE_START_MONTH, day=CYCLE_START_DAY
             )
             cycle_end = datetime.date(
-                year=today.year + 1, month=CYCLE_START_MONTH, day=CYCLE_START_DAY
+                year=localized_now.year + 1,
+                month=CYCLE_START_MONTH,
+                day=CYCLE_START_DAY,
             )
         total_days = (cycle_end - cycle_start).days
         # Now compute how many blue days there is in this cycle
@@ -431,14 +436,16 @@ class DaysUsed(SensorEntity):
     def update(self) -> None:
         """Update the value of the sensor from the thread object memory cache."""
         # First compute the number of days this cycle has (handles leap year)
-        today = datetime.datetime.today()
-        if today.month < CYCLE_START_MONTH:
+        localized_now = datetime.datetime.now(tz=FRANCE_TZ)
+        if localized_now.month < CYCLE_START_MONTH:
             cycle_start = datetime.date(
-                year=today.year - 1, month=CYCLE_START_MONTH, day=CYCLE_START_DAY
+                year=localized_now.year - 1,
+                month=CYCLE_START_MONTH,
+                day=CYCLE_START_DAY,
             )
         else:
             cycle_start = datetime.date(
-                year=today.year, month=CYCLE_START_MONTH, day=CYCLE_START_DAY
+                year=localized_now.year, month=CYCLE_START_MONTH, day=CYCLE_START_DAY
             )
         # Count already defined days since the beginning of the cycle
         nb_blue_days = 0
@@ -471,7 +478,6 @@ class NextCycleTime(SensorEntity):
 
     # Generic properties
     _attr_has_entity_name = True
-    _attr_attribution = API_ATTRIBUTION
     _attr_name = "Cycle Prochaine réinitialisation"
     # Sensor properties
     _attr_device_class = SensorDeviceClass.TIMESTAMP
@@ -499,20 +505,75 @@ class NextCycleTime(SensorEntity):
     @callback
     def update(self) -> None:
         """Update the value of the sensor from the thread object memory cache."""
-        today = datetime.datetime.today()
-        if today.month >= CYCLE_START_MONTH and today.day >= CYCLE_START_DAY:
+        localized_now = datetime.datetime.now(tz=FRANCE_TZ)
+        if (
+            localized_now.month >= CYCLE_START_MONTH
+            and localized_now.day >= CYCLE_START_DAY
+        ):
             self._attr_native_value = datetime.datetime(
-                year=today.year + 1,
+                year=localized_now.year + 1,
+                month=CYCLE_START_MONTH,
+                day=CYCLE_START_DAY,
+                hour=HOUR_OF_CHANGE,
+                tzinfo=localized_now.tzinfo,
+            )
+        else:
+            self._attr_native_value = datetime.datetime(
+                year=localized_now.year,
                 month=CYCLE_START_MONTH,
                 day=CYCLE_START_DAY,
                 hour=HOUR_OF_CHANGE,
                 tzinfo=FRANCE_TZ,
             )
-        else:
+
+
+class OffPeakTime(SensorEntity):
+    """Off Peak Time Remaining Sensor Entity."""
+
+    # Generic properties
+    _attr_has_entity_name = True
+    _attr_name = "Heures Creuses (passage)"
+    # Sensor properties
+    _attr_device_class = SensorDeviceClass.TIMESTAMP
+
+    def __init__(self, config_id: str) -> None:
+        """Initialize the Off Peak Time Remaining Sensor."""
+        # Generic entity properties
+        self._attr_unique_id = f"{DOMAIN}_{config_id}_off_peak_time"
+        # Sensor entity properties
+        self._attr_native_value: datetime.datetime | None = None
+        # RTE Tempo Calendar entity properties
+        self._config_id = config_id
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return the device info."""
+        return DeviceInfo(
+            entry_type=DeviceEntryType.SERVICE,
+            identifiers={(DOMAIN, self._config_id)},
+            name=DEVICE_NAME,
+            manufacturer=DEVICE_MANUFACTURER,
+            model=DEVICE_MODEL,
+        )
+
+    @callback
+    def update(self) -> None:
+        """Update/Recompute the value of the sensor."""
+        localized_now = datetime.datetime.now(tz=FRANCE_TZ)
+        if localized_now.hour >= HOUR_OF_CHANGE:
             self._attr_native_value = datetime.datetime(
-                year=today.year,
-                month=CYCLE_START_MONTH,
-                day=CYCLE_START_DAY,
-                hour=HOUR_OF_CHANGE,
-                tzinfo=FRANCE_TZ,
+                year=localized_now.year,
+                month=localized_now.month,
+                day=localized_now.day,
+                hour=OFF_PEAK_START,
+                tzinfo=localized_now.tzinfo,
+            )
+        else:
+            yesterday = localized_now - datetime.timedelta(days=1)
+            self._attr_native_value = datetime.datetime(
+                year=yesterday.year,
+                month=yesterday.month,
+                day=yesterday.day,
+                hour=OFF_PEAK_START,
+                tzinfo=yesterday.tzinfo,
             )

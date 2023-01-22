@@ -57,6 +57,7 @@ API_ATTRIBUTION = "Données fournies par data.rte-france.com"
 # Tempo def
 
 HOUR_OF_CHANGE = 6
+OFF_PEAK_START = 22
 TOTAL_RED_DAYS = 22
 TOTAL_WHITE_DAYS = 43
 CYCLE_START_MONTH = 9
