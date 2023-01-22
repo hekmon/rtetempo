@@ -613,7 +613,7 @@ class OffPeakEndTime(SensorEntity):
     def update(self) -> None:
         """Update/Recompute the value of the sensor."""
         localized_now = datetime.datetime.now(tz=FRANCE_TZ)
-        if localized_now.hour > OFF_PEAK_START:
+        if localized_now.hour >= OFF_PEAK_START:
             tomorrow = localized_now + datetime.timedelta(days=1)
             self._attr_native_value = datetime.datetime(
                 year=tomorrow.year,
