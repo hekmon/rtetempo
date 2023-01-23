@@ -76,8 +76,7 @@ async def async_setup_entry(
         DaysUsed(config_entry.entry_id, api_worker, API_VALUE_WHITE),
         DaysUsed(config_entry.entry_id, api_worker, API_VALUE_RED),
         NextCycleTime(config_entry.entry_id),
-        OffPeakStartTime(config_entry.entry_id),
-        OffPeakEndTime(config_entry.entry_id),
+        OffPeakChangeTime(config_entry.entry_id),
     ]
     # Add the entities to HA
     async_add_entities(sensors, True)
@@ -528,8 +527,8 @@ class NextCycleTime(SensorEntity):
             )
 
 
-class OffPeakStartTime(SensorEntity):
-    """Off Peak Start Time Remaining Sensor Entity."""
+class OffPeakChangeTime(SensorEntity):
+    """Off Peak Change Time Remaining Sensor Entity."""
 
     # Generic properties
     _attr_has_entity_name = True
@@ -538,9 +537,9 @@ class OffPeakStartTime(SensorEntity):
     _attr_device_class = SensorDeviceClass.TIMESTAMP
 
     def __init__(self, config_id: str) -> None:
-        """Initialize the Off Peak Start Time Remaining Sensor."""
+        """Initialize the Off Peak Change Time Remaining Sensor."""
         # Generic entity properties
-        self._attr_unique_id = f"{DOMAIN}_{config_id}_off_peak_time_on"
+        self._attr_unique_id = f"{DOMAIN}_{config_id}_off_peak_change_time"
         # Sensor entity properties
         self._attr_native_value: datetime.datetime | None = None
         # RTE Tempo Calendar entity properties
@@ -561,7 +560,15 @@ class OffPeakStartTime(SensorEntity):
     def update(self) -> None:
         """Update/Recompute the value of the sensor."""
         localized_now = datetime.datetime.now(tz=FRANCE_TZ)
-        if localized_now.hour >= HOUR_OF_CHANGE:
+        if localized_now.hour < HOUR_OF_CHANGE:
+            self._attr_native_value = datetime.datetime(
+                year=localized_now.year,
+                month=localized_now.month,
+                day=localized_now.day,
+                hour=HOUR_OF_CHANGE,
+                tzinfo=localized_now.tzinfo,
+            )
+        elif localized_now.hour < OFF_PEAK_START:
             self._attr_native_value = datetime.datetime(
                 year=localized_now.year,
                 month=localized_now.month,
@@ -570,50 +577,6 @@ class OffPeakStartTime(SensorEntity):
                 tzinfo=localized_now.tzinfo,
             )
         else:
-            yesterday = localized_now - datetime.timedelta(days=1)
-            self._attr_native_value = datetime.datetime(
-                year=yesterday.year,
-                month=yesterday.month,
-                day=yesterday.day,
-                hour=OFF_PEAK_START,
-                tzinfo=yesterday.tzinfo,
-            )
-
-
-class OffPeakEndTime(SensorEntity):
-    """Off Peak End Time Remaining Sensor Entity."""
-
-    # Generic properties
-    _attr_has_entity_name = True
-    _attr_name = "Heures Creuses (fin)"
-    # Sensor properties
-    _attr_device_class = SensorDeviceClass.TIMESTAMP
-
-    def __init__(self, config_id: str) -> None:
-        """Initialize the Off Peak End Time Remaining Sensor."""
-        # Generic entity properties
-        self._attr_unique_id = f"{DOMAIN}_{config_id}_off_peak_time_off"
-        # Sensor entity properties
-        self._attr_native_value: datetime.datetime | None = None
-        # RTE Tempo Calendar entity properties
-        self._config_id = config_id
-
-    @property
-    def device_info(self) -> DeviceInfo:
-        """Return the device info."""
-        return DeviceInfo(
-            entry_type=DeviceEntryType.SERVICE,
-            identifiers={(DOMAIN, self._config_id)},
-            name=DEVICE_NAME,
-            manufacturer=DEVICE_MANUFACTURER,
-            model=DEVICE_MODEL,
-        )
-
-    @callback
-    def update(self) -> None:
-        """Update/Recompute the value of the sensor."""
-        localized_now = datetime.datetime.now(tz=FRANCE_TZ)
-        if localized_now.hour >= OFF_PEAK_START:
             tomorrow = localized_now + datetime.timedelta(days=1)
             self._attr_native_value = datetime.datetime(
                 year=tomorrow.year,
@@ -621,12 +584,4 @@ class OffPeakEndTime(SensorEntity):
                 day=tomorrow.day,
                 hour=HOUR_OF_CHANGE,
                 tzinfo=tomorrow.tzinfo,
-            )
-        else:
-            self._attr_native_value = datetime.datetime(
-                year=localized_now.year,
-                month=localized_now.month,
-                day=localized_now.day,
-                hour=HOUR_OF_CHANGE,
-                tzinfo=localized_now.tzinfo,
             )
