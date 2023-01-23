@@ -532,7 +532,7 @@ class OffPeakChangeTime(SensorEntity):
 
     # Generic properties
     _attr_has_entity_name = True
-    _attr_name = "Heures Creuses (début)"
+    _attr_name = "Heures Creuses (changement)"
     # Sensor properties
     _attr_device_class = SensorDeviceClass.TIMESTAMP
 
