@@ -92,11 +92,11 @@ class CurrentColor(SensorEntity):
     _attr_device_class = SensorDeviceClass.ENUM
     _attr_icon = "mdi:palette"
 
-    def __init__(self, config_id: str, api_worker: APIWorker, emoji: bool) -> None:
+    def __init__(self, config_id: str, api_worker: APIWorker, visual: bool) -> None:
         """Initialize the Current Color Sensor."""
         # Generic entity properties
-        if emoji:
-            self._attr_name = "Couleur actuelle (emoji)"
+        if visual:
+            self._attr_name = "Couleur actuelle (visuel)"
             self._attr_unique_id = f"{DOMAIN}_{config_id}_current_color_emoji"
             self._attr_options = [
                 SENSOR_COLOR_BLUE_EMOJI,
@@ -118,7 +118,7 @@ class CurrentColor(SensorEntity):
         # RTE Tempo Calendar entity properties
         self._config_id = config_id
         self._api_worker = api_worker
-        self._emoji = emoji
+        self._visual = visual
 
     @property
     def device_info(self) -> DeviceInfo:
@@ -139,14 +139,17 @@ class CurrentColor(SensorEntity):
             if tempo_day.Start <= localized_now < tempo_day.End:
                 # Found a match !
                 self._attr_available = True
-                if self._emoji:
+                if self._visual:
                     self._attr_native_value = get_color_emoji(tempo_day.Value)
+                    self._attr_icon = get_color_icon(tempo_day.Value)
                 else:
                     self._attr_native_value = get_color_name(tempo_day.Value)
                 return
         # Nothing found
         self._attr_available = False
         self._attr_native_value = None
+        if self._visual:
+            self._attr_icon = "mdi:palette"
 
 
 class NextColor(SensorEntity):
@@ -159,11 +162,11 @@ class NextColor(SensorEntity):
     _attr_device_class = SensorDeviceClass.ENUM
     _attr_icon = "mdi:palette"
 
-    def __init__(self, config_id: str, api_worker: APIWorker, emoji: bool) -> None:
+    def __init__(self, config_id: str, api_worker: APIWorker, visual: bool) -> None:
         """Initialize the Next Color Sensor."""
         # Generic entity properties
-        if emoji:
-            self._attr_name = "Prochaine couleur (emoji)"
+        if visual:
+            self._attr_name = "Prochaine couleur (visuel)"
             self._attr_unique_id = f"{DOMAIN}_{config_id}_next_color_emoji"
             self._attr_options = [
                 SENSOR_COLOR_BLUE_EMOJI,
@@ -185,7 +188,7 @@ class NextColor(SensorEntity):
         # RTE Tempo Calendar entity properties
         self._config_id = config_id
         self._api_worker = api_worker
-        self._emoji = emoji
+        self._visual = visual
 
     @property
     def device_info(self) -> DeviceInfo:
@@ -206,15 +209,17 @@ class NextColor(SensorEntity):
             if localized_now < tempo_day.Start:
                 # Found a match !
                 self._attr_available = True
-                if self._emoji:
+                if self._visual:
                     self._attr_native_value = get_color_emoji(tempo_day.Value)
+                    self._attr_icon = get_color_icon(tempo_day.Value)
                 else:
                     self._attr_native_value = get_color_name(tempo_day.Value)
                 return
         # Special case for emoji
-        if self._emoji:
+        if self._visual:
             self._attr_available = True
             self._attr_native_value = SENSOR_COLOR_UNKNOWN_EMOJI
+            self._attr_icon = "mdi:palette"
         else:
             self._attr_available = False
             self._attr_native_value = None
@@ -230,6 +235,18 @@ def get_color_emoji(value: str) -> str:
         return SENSOR_COLOR_BLUE_EMOJI
     _LOGGER.warning("Can not get color emoji for unknown value: %s", value)
     return SENSOR_COLOR_UNKNOWN_EMOJI
+
+
+def get_color_icon(value: str) -> str:
+    """Return the corresponding emoji for a day color."""
+    if value == API_VALUE_RED:
+        return "mdi:alert"
+    if value == API_VALUE_WHITE:
+        return "mdi:information-outline"
+    if value == API_VALUE_BLUE:
+        return "mdi:check-bold"
+    _LOGGER.warning("Can not get color icon for unknown value: %s", value)
+    return "mdi:palette"
 
 
 def get_color_name(value: str) -> str:
