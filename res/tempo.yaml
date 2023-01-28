@@ -1,12 +1,12 @@
 type: entities
 entities:
-  - entity: sensor.rte_tempo_couleur_actuelle_emoji
+  - entity: sensor.rte_tempo_couleur_actuelle_visuel
     secondary_info: last-changed
     name: Couleur Actuelle
-  - entity: sensor.rte_tempo_prochain_changement_de_couleur
+  - entity: sensor.rte_tempo_prochaine_couleur_changement
     name: Prochain Changement
     secondary_info: none
-  - entity: sensor.rte_tempo_prochaine_couleur_emoji
+  - entity: sensor.rte_tempo_prochaine_couleur_visuel
     secondary_info: last-changed
     name: Prochaine Couleur
 title: Tempo
