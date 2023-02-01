@@ -11,5 +11,5 @@ entities:
     name: Restant 🔴
   - entity: sensor.rte_tempo_cycle_prochaine_reinitialisation
     secondary_info: none
-    name: Prochaine cycle
+    name: Prochain cycle
 title: Tempo - Cycle
