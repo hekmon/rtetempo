@@ -8,6 +8,7 @@ Elle intègre dans Home Assistant plusieurs éléments:
 * des capteurs de la couleur actuelle et celle du lendemain en texte et en emoji
 * des capteurs comptants les jours passés et futurs de chaque couleurs
 * des capteurs permettant de connaître la date et l'heure (et donc le temps restant) du prochain changement de couleur mais aussi du cycle en cours
+* des capteurs liés aux heures creuses pour faciliter les automatisations
 
 ### Exemples
 
