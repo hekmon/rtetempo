@@ -3,8 +3,8 @@ show_icon: true
 show_state: true
 type: glance
 entities:
-  - entity: sensor.rte_tempo_couleur_actuelle_emoji
-  - entity: sensor.rte_tempo_prochain_changement_de_couleur
-  - entity: sensor.rte_tempo_prochaine_couleur_emoji
+  - entity: sensor.rte_tempo_couleur_actuelle_visuel
+  - entity: sensor.rte_tempo_prochaine_couleur_changement
+  - entity: sensor.rte_tempo_prochaine_couleur_visuel
 title: Tempo
 state_color: false
