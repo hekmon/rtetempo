@@ -34,7 +34,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     except KeyError:
         hass.data[DOMAIN] = {}
         hass.data[DOMAIN][entry.entry_id] = api_worker
-    hass.config_entries.async_setup_platforms(entry, PLATFORMS)
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     # main init done
     return True
 
