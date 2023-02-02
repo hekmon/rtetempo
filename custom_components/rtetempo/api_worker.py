@@ -267,7 +267,7 @@ class APIWorker(threading.Thread):
             payload = response.json()
         except requests.JSONDecodeError as exc:
             _LOGGER.error(
-                "JSON parsing error on a HTTP 200 request: %s", exc)
+                "JSON parsing error on a HTTP 200 request (%s):\n%s", exc, response.text)
             return None
         # Parse datetimes and fix time for start and end dates
         tempo_days_time: list[TempoDay] = []
