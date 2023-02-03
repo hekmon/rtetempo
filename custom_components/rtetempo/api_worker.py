@@ -221,6 +221,9 @@ class APIWorker(threading.Thread):
             "start_date": start_str[:-2] + ":" + start_str[-2:],
             "end_date": end_str[:-2] + ":" + end_str[-2:],
         }
+        headers = {
+            "Accept": "application/json"
+        }
         _LOGGER.debug(
             "Calling %s with start_date as '%s' and end_date as '%s'",
             API_TEMPO_ENDPOINT,
@@ -230,12 +233,12 @@ class APIWorker(threading.Thread):
         # fetch data
         try:
             return self._oauth.get(
-                API_TEMPO_ENDPOINT, params=params, timeout=API_REQ_TIMEOUT
+                API_TEMPO_ENDPOINT, params=params, timeout=API_REQ_TIMEOUT, headers=headers
             )
         except TokenExpiredError:
             self._get_access_token()
             return self._oauth.get(
-                API_TEMPO_ENDPOINT, params=params, timeout=API_REQ_TIMEOUT
+                API_TEMPO_ENDPOINT, params=params, timeout=API_REQ_TIMEOUT, headers=headers
             )
 
     def _update_tempo_days(
