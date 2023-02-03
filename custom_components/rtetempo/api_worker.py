@@ -31,6 +31,7 @@ from .const import (
     API_VALUE_BLUE,
     FRANCE_TZ,
     HOUR_OF_CHANGE,
+    USER_AGENT,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -222,7 +223,8 @@ class APIWorker(threading.Thread):
             "end_date": end_str[:-2] + ":" + end_str[-2:],
         }
         headers = {
-            "Accept": "application/json"
+            "Accept": "application/json",
+            "User-Agent": USER_AGENT,
         }
         _LOGGER.debug(
             "Calling %s with start_date as '%s' and end_date as '%s'",

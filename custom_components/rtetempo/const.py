@@ -52,6 +52,7 @@ API_VALUE_RED = "RED"
 API_VALUE_WHITE = "WHITE"
 API_VALUE_BLUE = "BLUE"
 API_ATTRIBUTION = "Données fournies par data.rte-france.com"
+USER_AGENT = "github.com/hekmon/rtetempo v1.2.1"
 
 
 # Tempo def
