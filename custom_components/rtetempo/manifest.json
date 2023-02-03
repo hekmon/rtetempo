@@ -4,7 +4,7 @@
   "config_flow": true,
   "documentation": "https://github.com/hekmon/rtetempo",
   "issue_tracker": "https://github.com/hekmon/rtetempo/issues",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "requirements": [
     "oauthlib==3.2.2",
     "requests==2.28.1",
