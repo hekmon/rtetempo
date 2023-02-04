@@ -1,0 +1,9 @@
+show_name: false
+show_icon: true
+show_state: true
+type: glance
+entities:
+  - entity: sensor.edf_tempo_prix_actuel
+  - entity: sensor.rte_tempo_heures_creuses_changement
+  - entity: sensor.edf_tempo_prochain_prix
+title: Tempo - Prix
