@@ -31,7 +31,15 @@ Voici comment faire :
 
 ### Installation de l'intégration dans Home Assistant
 
-Téléchargez l'intégration depuis la page des [releases](https://github.com/hekmon/rtetempo/releases) et décompressez le dossier `custom_components/rtetempo` dans votre dossier de configuration de Home Assistant. Vous devez obtenir: `/chemin/vers/dossier/de/configuration/homeassistant/custom_components/rtetempo`.
+#### Avec HACS
+
+[![Ouvre votre instance Home Assistant et ajoute un dépôt dans la boutique communautaire Home Assistant.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=hekmon&repository=rtetempo&category=integration)
+
+Plus d'informations sur HACS [ici](https://hacs.xyz/).
+
+#### Manuellement
+
+Téléchargez l'intégration depuis la page des [releases](https://github.com/hekmon/rtetempo/releases) et décompressez le dossier `custom_components/rtetempo` dans votre dossier de configuration de Home Assistant. Vous devez obtenir: `/chemin/vers/dossier/de/configuration/homeassistant/custom_components/rtetempo` si votre fichier de configuration se trouve dans `/chemin/vers/dossier/de/configuration/homeassistant/configuration.yaml`.
 
 Redémarrez votre Home Assistant.
 
