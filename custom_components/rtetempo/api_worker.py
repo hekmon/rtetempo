@@ -32,6 +32,9 @@ from .const import (
     FRANCE_TZ,
     HOUR_OF_CHANGE,
     USER_AGENT,
+    CONFIRM_HOUR,
+    CONFIRM_MIN,
+    CONFIRM_CHECK,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -133,24 +136,53 @@ class APIWorker(threading.Thread):
             diff,
         )
         if diff.days == 2:
-            # we have next day color, wait until next change
-            tomorrow = localized_now + datetime.timedelta(days=1)
-            next_call = datetime.datetime(
-                year=tomorrow.year,
-                month=tomorrow.month,
-                day=tomorrow.day,
-                hour=HOUR_OF_CHANGE,
+            # we have next day color, check if we need to confirm or wait until tomorrow
+            ref_confirmation = datetime.datetime(
+                year=localized_now.year,
+                month=localized_now.month,
+                day=localized_now.day,
+                hour=CONFIRM_HOUR,
+                minute=CONFIRM_MIN,
                 tzinfo=localized_now.tzinfo,
             )
-            wait_time = next_call - localized_now
-            wait_time = datetime.timedelta(
-                seconds=random.randrange(
-                    wait_time.seconds, wait_time.seconds + 900)
-            )
-            _LOGGER.info(
-                "We got next day color, waiting until tomorrow to get futur next day color (wait time is %s)",
-                wait_time,
-            )
+            if localized_now > ref_confirmation:
+                # we are past the confirmation hour, wait until tomorrow
+                tomorrow = localized_now + datetime.timedelta(days=1)
+                next_call = datetime.datetime(
+                    year=tomorrow.year,
+                    month=tomorrow.month,
+                    day=tomorrow.day,
+                    hour=HOUR_OF_CHANGE,
+                    tzinfo=localized_now.tzinfo,
+                )
+                wait_time = next_call - localized_now
+                wait_time = datetime.timedelta(
+                    seconds=random.randrange(
+                        wait_time.seconds, wait_time.seconds + 900)
+                )
+                _LOGGER.info(
+                    "We got next day color, waiting until tomorrow to get futur next day color (wait time is %s)",
+                    wait_time,
+                )
+            else:
+                # we are not past the confirmation hour yet, wait until 2nd confirmation call
+                tomorrow = localized_now + datetime.timedelta(days=1)
+                next_call = datetime.datetime(
+                    year=tomorrow.year,
+                    month=tomorrow.month,
+                    day=tomorrow.day,
+                    hour=CONFIRM_CHECK,
+                    tzinfo=localized_now.tzinfo,
+                )
+                wait_time = next_call - localized_now
+                wait_time = datetime.timedelta(
+                    seconds=random.randrange(
+                        wait_time.seconds - 900, wait_time.seconds + 900) # +- 15min
+                )
+                _LOGGER.info(
+                    "We got next day color but we it is too early to be sure: waiting until confirmation hour to get futur next day color (wait time is %s)",
+                    wait_time,
+                )
         elif diff.days == 1:
             # we do not have next day color yet
             if localized_now.hour < 6:
