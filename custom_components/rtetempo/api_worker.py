@@ -233,7 +233,10 @@ class APIWorker(threading.Thread):
     def _get_access_token(self):
         _LOGGER.debug("Requesting access token")
         try:
-            self._oauth.fetch_token(token_url=API_TOKEN_ENDPOINT, auth=self._auth)
+            headers = {
+                "User-Agent": USER_AGENT,
+            }
+            self._oauth.fetch_token(token_url=API_TOKEN_ENDPOINT, auth=self._auth, headers=headers)
         except (
             requests.exceptions.RequestException,
             OAuth2Error,
