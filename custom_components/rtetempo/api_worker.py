@@ -29,12 +29,12 @@ from .const import (
     API_TEMPO_ENDPOINT,
     API_TOKEN_ENDPOINT,
     API_VALUE_BLUE,
+    CONFIRM_CHECK,
+    CONFIRM_HOUR,
+    CONFIRM_MIN,
     FRANCE_TZ,
     HOUR_OF_CHANGE,
     USER_AGENT,
-    CONFIRM_HOUR,
-    CONFIRM_MIN,
-    CONFIRM_CHECK,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -157,8 +157,7 @@ class APIWorker(threading.Thread):
                 )
                 wait_time = next_call - localized_now
                 wait_time = datetime.timedelta(
-                    seconds=random.randrange(
-                        wait_time.seconds, wait_time.seconds + 900)
+                    seconds=random.randrange(wait_time.seconds, wait_time.seconds + 900)
                 )
                 _LOGGER.info(
                     "We got next day color, waiting until tomorrow to get futur next day color (wait time is %s)",
@@ -177,7 +176,8 @@ class APIWorker(threading.Thread):
                 wait_time = next_call - localized_now
                 wait_time = datetime.timedelta(
                     seconds=random.randrange(
-                        wait_time.seconds - 900, wait_time.seconds + 900) # +- 15min
+                        wait_time.seconds - 900, wait_time.seconds + 900
+                    )  # +- 15min
                 )
                 _LOGGER.info(
                     "We got next day color but we it is too early to be sure: waiting until confirmation hour to get futur next day color (wait time is %s)",
@@ -196,8 +196,7 @@ class APIWorker(threading.Thread):
                 )
                 wait_time = next_call - localized_now
                 wait_time = datetime.timedelta(
-                    seconds=random.randrange(
-                        wait_time.seconds, wait_time.seconds + 900)
+                    seconds=random.randrange(wait_time.seconds, wait_time.seconds + 900)
                 )
                 _LOGGER.debug(
                     "We do not have next day color yet, waiting hour of day change at %sh (wait time is %s)",
@@ -208,8 +207,7 @@ class APIWorker(threading.Thread):
                 wait_time = datetime.timedelta(minutes=30)
                 wait_time = datetime.timedelta(
                     seconds=random.randrange(
-                        int(wait_time.seconds * 5 /
-                            6), int(wait_time.seconds * 7 / 6)
+                        int(wait_time.seconds * 5 / 6), int(wait_time.seconds * 7 / 6)
                     )
                 )
                 _LOGGER.debug(
@@ -235,14 +233,12 @@ class APIWorker(threading.Thread):
     def _get_access_token(self):
         _LOGGER.debug("Requesting access token")
         try:
-            self._oauth.fetch_token(
-                token_url=API_TOKEN_ENDPOINT, auth=self._auth)
+            self._oauth.fetch_token(token_url=API_TOKEN_ENDPOINT, auth=self._auth)
         except (
             requests.exceptions.RequestException,
             OAuth2Error,
         ) as requests_exception:
-            _LOGGER.error(
-                "Fetching OAuth2 access token failed: %s", requests_exception)
+            _LOGGER.error("Fetching OAuth2 access token failed: %s", requests_exception)
 
     def _get_tempo_data(
         self, start: datetime.datetime, end: datetime.datetime
@@ -267,12 +263,18 @@ class APIWorker(threading.Thread):
         # fetch data
         try:
             return self._oauth.get(
-                API_TEMPO_ENDPOINT, params=params, timeout=API_REQ_TIMEOUT, headers=headers
+                API_TEMPO_ENDPOINT,
+                params=params,
+                timeout=API_REQ_TIMEOUT,
+                headers=headers,
             )
         except TokenExpiredError:
             self._get_access_token()
             return self._oauth.get(
-                API_TEMPO_ENDPOINT, params=params, timeout=API_REQ_TIMEOUT, headers=headers
+                API_TEMPO_ENDPOINT,
+                params=params,
+                timeout=API_REQ_TIMEOUT,
+                headers=headers,
             )
 
     def _update_tempo_days(
@@ -293,18 +295,17 @@ class APIWorker(threading.Thread):
             _LOGGER.error("API request failed: %s", requests_exception)
             return None
         except OAuth2Error as oauth_execption:
-            _LOGGER.error(
-                "API request failed with OAuth2 error: %s", oauth_execption)
+            _LOGGER.error("API request failed with OAuth2 error: %s", oauth_execption)
             return None
         except (BadRequest, ServerError, UnexpectedError) as http_error:
-            _LOGGER.error(
-                "API request failed with HTTP error code: %s", http_error)
+            _LOGGER.error("API request failed with HTTP error code: %s", http_error)
             return None
         try:
             payload = response.json()
         except requests.JSONDecodeError as exc:
             _LOGGER.error(
-                "JSON parsing error on a HTTP 200 request (%s):\n%s", exc, response.text)
+                "JSON parsing error on a HTTP 200 request (%s):\n%s", exc, response.text
+            )
             return None
         # Parse datetimes and fix time for start and end dates
         tempo_days_time: list[TempoDay] = []
@@ -320,8 +321,7 @@ class APIWorker(threading.Thread):
                             parse_rte_api_datetime(tempo_day[API_KEY_END])
                         ),
                         Value=tempo_day[API_KEY_VALUE],
-                        Updated=parse_rte_api_datetime(
-                            tempo_day[API_KEY_UPDATED]),
+                        Updated=parse_rte_api_datetime(tempo_day[API_KEY_UPDATED]),
                     )
                 )
                 time_days_date.append(
@@ -329,8 +329,7 @@ class APIWorker(threading.Thread):
                         Start=parse_rte_api_date(tempo_day[API_KEY_START]),
                         End=parse_rte_api_date(tempo_day[API_KEY_END]),
                         Value=tempo_day[API_KEY_VALUE],
-                        Updated=parse_rte_api_datetime(
-                            tempo_day[API_KEY_UPDATED]),
+                        Updated=parse_rte_api_datetime(tempo_day[API_KEY_UPDATED]),
                     )
                 )
             except KeyError as key_error:
@@ -339,15 +338,13 @@ class APIWorker(threading.Thread):
                     tempo_days_time.append(
                         TempoDay(
                             Start=adjust_tempo_time(
-                                parse_rte_api_datetime(
-                                    tempo_day[API_KEY_START])
+                                parse_rte_api_datetime(tempo_day[API_KEY_START])
                             ),
                             End=adjust_tempo_time(
                                 parse_rte_api_datetime(tempo_day[API_KEY_END])
                             ),
                             Value=API_VALUE_BLUE,
-                            Updated=parse_rte_api_datetime(
-                                tempo_day[API_KEY_UPDATED]),
+                            Updated=parse_rte_api_datetime(tempo_day[API_KEY_UPDATED]),
                         )
                     )
                     time_days_date.append(
@@ -355,8 +352,7 @@ class APIWorker(threading.Thread):
                             Start=parse_rte_api_date(tempo_day[API_KEY_START]),
                             End=parse_rte_api_date(tempo_day[API_KEY_END]),
                             Value=API_VALUE_BLUE,
-                            Updated=parse_rte_api_datetime(
-                                tempo_day[API_KEY_UPDATED]),
+                            Updated=parse_rte_api_datetime(tempo_day[API_KEY_UPDATED]),
                         )
                     )
                 else:
