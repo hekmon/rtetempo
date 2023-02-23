@@ -3,7 +3,7 @@
   "name": "RTE Tempo",
   "codeowners": ["@hekmon"],
   "config_flow": true,
-  "documentation": "https://github.com/hekmon/rtetempo",
+  "documentation": "https://github.com/hekmon/rtetempo/blob/v1.3.0/README.md",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/hekmon/rtetempo/issues",
   "requirements": [
