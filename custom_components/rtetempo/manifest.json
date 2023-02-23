@@ -1,15 +1,15 @@
 {
   "domain": "rtetempo",
   "name": "RTE Tempo",
+  "codeowners": ["@hekmon"],
   "config_flow": true,
   "documentation": "https://github.com/hekmon/rtetempo",
+  "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/hekmon/rtetempo/issues",
-  "version": "1.3.0",
   "requirements": [
     "oauthlib==3.2.2",
     "requests==2.28.1",
     "requests-oauthlib==1.3.1"
   ],
-  "codeowners": ["@hekmon"],
-  "iot_class": "cloud_polling"
+  "version": "1.3.0"
 }
