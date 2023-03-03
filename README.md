@@ -12,7 +12,7 @@ Elle intègre dans Home Assistant plusieurs éléments:
 
 ### Exemples
 
-[Service et Capteurs](https://github.com/hekmon/rtetempo/raw/v1.3.0/res/rtetempo_svc.png) & [Calendrier](https://github.com/hekmon/rtetempo/raw/v1.3.0/res/rtetempo_calendar.png)
+[Service et Capteurs](https://github.com/hekmon/rtetempo/raw/v1.3.1/res/rtetempo_svc.png) & [Calendrier](https://github.com/hekmon/rtetempo/raw/v1.3.1/res/rtetempo_calendar.png)
 
 ## Installation
 
@@ -49,6 +49,6 @@ Une fois l'intégration installée, rendez-vous dans la page des intégrations d
 
 ## Exemples de cartes (lovelace)
 
-* Couleur du jour et du lendemain ([rendu 1](https://github.com/hekmon/rtetempo/raw/v1.3.0/res/lovelace_colors_1.png) [rendu 2](https://github.com/hekmon/rtetempo/raw/v1.3.0/res/lovelace_colors_2.png), [code](https://github.com/hekmon/rtetempo/blob/v1.3.0/res/tempo.yaml))
-* Nombre de jours restants sur le cycle ([rendu](https://github.com/hekmon/rtetempo/raw/v1.3.0/res/lovelace_cycle.png), [code](https://github.com/hekmon/rtetempo/blob/v1.3.0/res/tempo_cycle.yaml))
+* Couleur du jour et du lendemain ([rendu 1](https://github.com/hekmon/rtetempo/raw/v1.3.1/res/lovelace_colors_1.png) [rendu 2](https://github.com/hekmon/rtetempo/raw/v1.3.1/res/lovelace_colors_2.png), [code](https://github.com/hekmon/rtetempo/blob/v1.3.1/res/tempo.yaml))
+* Nombre de jours restants sur le cycle ([rendu](https://github.com/hekmon/rtetempo/raw/v1.3.1/res/lovelace_cycle.png), [code](https://github.com/hekmon/rtetempo/blob/v1.3.1/res/tempo_cycle.yaml))
 * Affichage dynamiques des prix ([rendu](https://github.com/hekmon/rtetempo/raw/main/res/tempo_prices.png), [code](https://github.com/hekmon/rtetempo/blob/main/res/tempo_prices.yaml), [input numbers](https://gist.github.com/hekmon/33cba41728bfe2e4e522851da052f91f), [template sensors](https://gist.github.com/hekmon/c2f64f22f58b92eae007797eb1a2732e))
