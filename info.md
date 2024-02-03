@@ -31,3 +31,7 @@ Une fois l'intégration installée, rendez-vous dans la page des intégrations d
 
 * Couleur du jour et du lendemain ([rendu 1](https://github.com/hekmon/rtetempo/raw/v1.3.2/res/lovelace_colors_1.png) [rendu 2](https://github.com/hekmon/rtetempo/raw/v1.3.2/res/lovelace_colors_2.png), [code](https://github.com/hekmon/rtetempo/blob/v1.3.2/res/tempo.yaml))
 * Nombre de jours restants sur le cycle ([rendu](https://github.com/hekmon/rtetempo/raw/v1.3.2/res/lovelace_cycle.png), [code](https://github.com/hekmon/rtetempo/blob/v1.3.2/res/tempo_cycle.yaml))
+
+## Dashboard Énergie aux couleurs Tempo
+
+Si vous souhaitez avoir les couleurs de votre dashbaord énergie correspondant aux couleurs tempo, rendez-vous [ici](https://github.com/hekmon/hatempotheme).
