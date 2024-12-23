@@ -1,0 +1,35 @@
+type: horizontal-stack
+cards:
+  - type: custom:mushroom-template-card
+    primary: >-
+      {{ 'Heures creuses' if
+      is_state('binary_sensor.rte_tempo_heures_creuses', 'on') else
+      'Heures pleines' }}
+    secondary: >-
+      {{ 'Tarif ' + states('sensor.rte_tempo_couleur_actuelle').lower() }}
+    icon: mdi:lightning-bolt
+    entity: sensor.rte_tempo_couleur_actuelle
+    icon_color: |-
+      {% if is_state('sensor.rte_tempo_couleur_actuelle', 'Blanc') %}
+          white
+      {% elif is_state('sensor.rte_tempo_couleur_actuelle', 'Bleu') %}
+          blue
+      {% elif is_state('sensor.rte_tempo_couleur_actuelle', 'Rouge') %}
+          red
+      {% endif %}
+    badge_color: ""
+    badge_icon: ""
+    fill_container: false
+  - type: custom:mushroom-template-card
+    primary: Demain
+    secondary: "{{ states('sensor.rte_tempo_prochaine_couleur') }}"
+    icon: mdi:calendar
+    icon_color: |-
+      {% if is_state('sensor.rte_tempo_couleur_actuelle', 'Blanc') %}
+          white
+      {% elif is_state('sensor.rte_tempo_couleur_actuelle', 'Bleu') %}
+          blue
+      {% elif is_state('sensor.rte_tempo_couleur_actuelle', 'Rouge') %}
+          red
+      {% endif %}
+    entity: sensor.rte_tempo_prochaine_couleur
