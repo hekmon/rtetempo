@@ -29,11 +29,11 @@ cards:
             secondary: "{{ states('sensor.rte_tempo_prochaine_couleur') }}"
             icon: mdi:calendar
             icon_color: |-
-              {% if is_state('sensor.rte_tempo_couleur_actuelle', 'Blanc') %}
+              {% if is_state('sensor.rte_tempo_prochaine_couleur', 'Blanc') %}
                   white
-              {% elif is_state('sensor.rte_tempo_couleur_actuelle', 'Bleu') %}
+              {% elif is_state('sensor.rte_tempo_prochaine_couleur', 'Bleu') %}
                   blue
-              {% elif is_state('sensor.rte_tempo_couleur_actuelle', 'Rouge') %}
+              {% elif is_state('sensor.rte_tempo_prochaine_couleur', 'Rouge') %}
                   red
               {% endif %}
             entity: sensor.rte_tempo_prochaine_couleur
