@@ -53,6 +53,11 @@ Une fois l'intégration installée, rendez-vous dans la page des intégrations d
 * Nombre de jours restants sur le cycle ([rendu](https://github.com/hekmon/rtetempo/raw/v1.3.2/res/lovelace_cycle.png), [code](https://github.com/hekmon/rtetempo/blob/v1.3.2/res/tempo_cycle.yaml))
 * Affichage dynamiques des prix ([rendu](https://github.com/hekmon/rtetempo/raw/main/res/tempo_prices.png), [code](https://github.com/hekmon/rtetempo/blob/main/res/tempo_prices.yaml), [input numbers](https://gist.github.com/hekmon/33cba41728bfe2e4e522851da052f91f), [template sensors](https://gist.github.com/hekmon/c2f64f22f58b92eae007797eb1a2732e))
 
+## Exemples de cartes (mushroom)
+* Couleur du jour et du lendemain ([rendu](res/mushroom_colors.png), [code](res/mushroom_colors.yaml))
+* Nombre de jours restants sur le cycle ([rendu](res/mushroom_cycle.png), [code](res/mushroom_cycle.yaml))
+* Couleur du jour et du lendemain + nombre de jours restants sur le cycle ([rendu](res/mushroom_complete.png), [code](res/mushroom_complete.yaml)) 
+
 ## Dashboard Énergie aux couleurs Tempo
 
 Si vous souhaitez avoir les couleurs de votre dashbaord énergie correspondant aux couleurs tempo, rendez-vous [ici](https://github.com/hekmon/hatempotheme).
