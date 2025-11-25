@@ -1,0 +1,122 @@
+type: vertical-stack
+cards:
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: custom:mushroom-template-card
+        primary: |-
+          {% set state = states('binary_sensor.rte_tempo_heures_creuses') %}
+          {% if state == 'on' %}
+            Heures creuses
+          {% elif state == 'off' %}
+            Heures pleines
+          {% endif %}
+        secondary: |-
+          {% set state = states('sensor.rte_tempo_couleur_actuelle') %}
+          {% if state == 'Bleu' %}
+            Tarif bleu
+          {% elif state == 'Blanc' %}
+            Tarif blanc
+          {% elif state == 'Rouge' %}
+            Tarif rouge
+          {% endif %}
+        icon: mdi:lightning-bolt
+        entity: sensor.rte_tempo_couleur_actuelle
+        badge_color: |-
+          {% set state = states('sensor.rte_tempo_couleur_actuelle') %}
+          {% if state == 'Rouge' %}
+            red
+          {% elif state == 'Bleu' %}
+            blue
+          {% elif state == 'Blanc' %}
+            grey
+          {% endif %}
+        icon_color: |-
+          {% set state = states('sensor.rte_tempo_couleur_actuelle') %}
+          {% if state == 'Bleu' %}
+            blue
+          {% elif state == 'Blanc' %}
+            grey
+          {% elif state == 'Rouge' %}
+            red
+          {% endif %}
+        badge_icon: |-
+          {% set state = states('sensor.rte_tempo_couleur_actuelle') %}
+          {% if state == 'Rouge' %}
+            mdi:alert
+          {% elif state == 'Bleu' %}
+            mdi:timer-sand
+          {% elif state == 'Blanc' %}
+            mdi:timer-sand
+          {% endif %}
+        tap_action:
+          action: more-info
+      - type: custom:mushroom-template-card
+        primary: Demain
+        secondary: |-
+          {% set state = states('sensor.rte_tempo_prochaine_couleur') %}
+          {% if state == 'Bleu' %}
+            Bleu
+          {% elif state == 'Blanc' %}
+            Blanc
+          {% elif state == 'Rouge' %}
+            Rouge
+          {% endif %}
+        icon: mdi:calendar
+        icon_color: |-
+          {% set state = states('sensor.rte_tempo_prochaine_couleur') %}
+          {% if state == 'Bleu' %}
+            blue
+          {% elif state == 'Blanc' %}
+            grey
+          {% elif state == 'Rouge' %}
+            red
+          {% endif %}
+        badge_icon: |-
+          {% set state = states('sensor.rte_tempo_prochaine_couleur') %}
+          {% if state == 'Rouge' %}
+            mdi:alert
+          {% elif state == 'Bleu' %}
+            mdi:timer-sand
+          {% elif state == 'Blanc' %}
+            mdi:timer-sand
+          {% endif %}
+        tap_action:
+          action: more-info
+        badge_color: |-
+          {% set state = states('sensor.rte_tempo_prochaine_couleur') %}
+          {% if state == 'Rouge' %}
+            red
+          {% elif state == 'Bleu' %}
+            blue
+          {% elif state == 'Blanc' %}
+            grey
+          {% endif %}
+  - type: grid
+    columns: 3
+    square: false
+    cards:
+      - type: custom:mushroom-template-card
+        primary: Bleu
+        secondary: "{{ states('sensor.rte_tempo_cycle_jours_restants_bleu') }} J"
+        icon: mdi:timer-sand
+        icon_color: blue
+        tap_action:
+          action: more-info
+      - type: custom:mushroom-template-card
+        primary: Blanc
+        secondary: "{{ states('sensor.rte_tempo_cycle_jours_restants_blanc') }} J"
+        icon: mdi:timer-sand
+        icon_color: grey
+        tap_action:
+          action: more-info
+        badge_icon: ""
+        badge_color: ""
+      - type: custom:mushroom-template-card
+        primary: Rouge
+        secondary: "{{ states('sensor.rte_tempo_cycle_jours_restants_rouge') }} J"
+        icon: mdi:timer-sand
+        icon_color: red
+        tap_action:
+          action: more-info
