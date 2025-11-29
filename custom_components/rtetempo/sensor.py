@@ -43,6 +43,10 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 
+# Importing coordinator and sensors for forecast data
+from .forecast_coordinator import ForecastCoordinator
+from .sensor_forecast import OpenDPEForecastSensor
+
 # config flow setup
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -78,9 +82,22 @@ async def async_setup_entry(
         NextCycleTime(config_entry.entry_id),
         OffPeakChangeTime(config_entry.entry_id),
     ]
+
+    #   Add forecast sensors from Open DPE
+    forecast_coordinator = ForecastCoordinator(hass)
+    await forecast_coordinator.async_config_entry_first_refresh()
+    
+    NUM_FORECAST_DAYS = 7  # J+1 à J+7
+    
+    # Skip index 0 (J+1) because RTE provides the official J+1 sensor
+    for index in range(1, NUM_FORECAST_DAYS):
+        # Text version
+        sensors.append(OpenDPEForecastSensor(forecast_coordinator, index, visual=False))
+        # Visual version (emoji)
+        sensors.append(OpenDPEForecastSensor(forecast_coordinator, index, visual=True))
+        
     # Add the entities to HA
     async_add_entities(sensors, True)
-
 
 class CurrentColor(SensorEntity):
     """Current Color Sensor Entity."""
