@@ -29,7 +29,7 @@ class ForecastCoordinator(DataUpdateCoordinator[List[ForecastDay]]):
         self.hass = hass
         self.session = async_get_clientsession(hass)
 
-        # Daily update at 07:00 (JSON is updated around 06:00)
+        # Daily uptade after midnight then every 6 hours (JSON is updated around 06:00)
         async_track_time_change(
             hass,
             self._scheduled_refresh,
@@ -57,3 +57,4 @@ class ForecastCoordinator(DataUpdateCoordinator[List[ForecastDay]]):
         except Exception as exc:
             _LOGGER.error("Open DPE: erreur lors de la mise à jour: %s", exc)
             raise UpdateFailed(f"Erreur mise à jour des prévisions Open DPE: {exc}")
+
