@@ -26,7 +26,7 @@ Voici comment faire :
 
 * [Créez un compte](https://data.rte-france.com/create_account) sur la plateforme.
 * Recherchez `Tempo Like Supply Contract` dans le catalogue d'API (présent dans la catégorie [Consommation](https://data.rte-france.com/catalog/consumption)) et cliquez sur `Découvrir l'API`.
-* Une fois sur la page de l'API Tempo, sélectionnez `Abonnez-vous à l'API` et créez une application (ou sélectionnez une existante que vous utilisez déjà pour votre Home Assistant).
+* Une fois sur [la page de l'API Tempo](https://data.rte-france.com/catalog/-/api/consumption/Tempo-Like-Supply-Contract/v1.1), sélectionnez `Abonnez-vous à l'API` et créez une application (ou sélectionnez une existante que vous utilisez déjà pour votre Home Assistant).
 * Une fois l'application créée et l'API Tempo associée, récupérez les informations d'authentification de votre [application](https://data.rte-france.com/group/guest/apps): `ID Client` et `ID Secret`.
 
 ### Installation de l'intégration dans Home Assistant
@@ -59,4 +59,4 @@ Des exemples de surcouches d'affichage créées par les utilisateurs (Mushroom e
 
 ## Dashboard Énergie aux couleurs Tempo
 
-Si vous souhaitez avoir les couleurs de votre dashbaord énergie correspondant aux couleurs tempo, rendez-vous [ici](https://github.com/hekmon/hatempotheme).
+Si vous souhaitez avoir les couleurs de votre dashboard énergie correspondant aux couleurs tempo, rendez-vous [ici](https://github.com/hekmon/hatempotheme).
