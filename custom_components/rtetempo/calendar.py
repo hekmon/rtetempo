@@ -74,6 +74,11 @@ class TempoCalendar(CalendarEntity):
         # Generic entity properties
         self._attr_name = "Calendrier"
         self._attr_unique_id = f"{DOMAIN}_{config_id}_calendar"
+        # Default calendar color for new installs (Home Assistant >= 2026.2
+        # stores it in entity registry options on first creation; older
+        # versions silently ignore it). User can still override it from the
+        # entity settings UI.
+        self._attr_initial_color = "#1A73E8"
         # TempoCalendar properties
         self._api_worker = api_worker
         self._config_id = config_id
