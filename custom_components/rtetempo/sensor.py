@@ -327,13 +327,13 @@ class DaysLeft(SensorEntity):
         """Initialize the Days Left Sensor."""
         # Generic entity properties
         if color == API_VALUE_BLUE:
-            self._attr_name = f"Cycle Jours restants {SENSOR_COLOR_BLUE_NAME}"
+            self._attr_name = f"Cycle Jours restants (non planifiés) {SENSOR_COLOR_BLUE_NAME}"
             self._attr_unique_id = f"{DOMAIN}_{config_id}_days_left_blue"
         elif color == API_VALUE_WHITE:
-            self._attr_name = f"Cycle Jours restants {SENSOR_COLOR_WHITE_NAME}"
+            self._attr_name = f"Cycle Jours restants (non planifiés) {SENSOR_COLOR_WHITE_NAME}"
             self._attr_unique_id = f"{DOMAIN}_{config_id}_days_left_white"
         elif color == API_VALUE_RED:
-            self._attr_name = f"Cycle Jours restants {SENSOR_COLOR_RED_NAME}"
+            self._attr_name = f"Cycle Jours restants (non planifiés) {SENSOR_COLOR_RED_NAME}"
             self._attr_unique_id = f"{DOMAIN}_{config_id}_days_left_red"
         else:
             raise Exception(f"invalid color {color}")

@@ -2,6 +2,8 @@
 
 Exemples de dashboards créés par les utilisateurs de rtetempo. Ces surcouches d'affichage sont indépendantes de l'intégration : seuls les entity ids les relient au plugin. Merci aux auteurs !
 
+> **Note :** les `entity_id` utilisés dans ces exemples (`sensor.rte_tempo_cycle_jours_restants_*`) correspondent à une intégration installée avant la version 1.4.0. Depuis la 1.4.0, les capteurs se nomment « Cycle Jours restants (non planifiés) » et les `entity_id` des nouvelles installations deviennent `sensor.rte_tempo_cycle_jours_restants_non_planifies_*`. Adaptez les exemples ci-dessous si votre installation est postérieure à la 1.4.0.
+
 ## Mushroom — exemples de Brawdunoir
 
 Contribués via la [PR #48](https://github.com/hekmon/rtetempo/pull/48).
