@@ -1,0 +1,14 @@
+type: horizontal-stack
+cards:
+  - type: custom:mushroom-entity-card
+    entity: sensor.rte_tempo_cycle_jours_restants_bleu
+    icon_color: blue
+    name: Bleu
+  - type: custom:mushroom-entity-card
+    entity: sensor.rte_tempo_cycle_jours_restants_blanc
+    icon_color: white
+    name: Blanc
+  - type: custom:mushroom-entity-card
+    entity: sensor.rte_tempo_cycle_jours_restants_rouge
+    icon_color: red
+    name: Rouge
