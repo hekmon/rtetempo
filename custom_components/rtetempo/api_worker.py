@@ -68,6 +68,8 @@ class APIWorker(threading.Thread):
         self._tempo_days_time: list[TempoDay] = []
         self._tempo_days_date: list[TempoDay] = []
         self.adjusted_days: bool = adjusted_days
+        # Failure tracking for log noise reduction
+        self._consecutive_failures = 0
         # Init parent thread class
         super().__init__(name="RTE Tempo API Worker")
 
@@ -117,6 +119,31 @@ class APIWorker(threading.Thread):
         """Setter to update serial reader options."""
         _LOGGER.debug("New adjusted days option value: %s", adjusted_days)
         self.adjusted_days = adjusted_days
+
+    def _record_failure(self, message: str, *args) -> None:
+        """Log a TRANSIENT API failure with noise reduction.
+
+        Only use this for transient failures (HTTP 5xx, network errors) that
+        heal by themselves on a later retry: the first failure of a streak is
+        logged at error level, subsequent ones at debug level only, so a user
+        is not alarmed while there is nothing they can do about it.
+
+        Permanent failures (HTTP 4xx, OAuth2 errors) must keep logging at
+        error level on every attempt because they require user action.
+        """
+        self._consecutive_failures += 1
+        if self._consecutive_failures == 1:
+            _LOGGER.error(message, *args)
+        else:
+            _LOGGER.debug(message, *args)
+
+    def _record_success(self) -> None:
+        """Log API recovery after a streak of transient failures, if any."""
+        if self._consecutive_failures > 0:
+            _LOGGER.info(
+                "API recovered after %d failed attempt(s)", self._consecutive_failures
+            )
+            self._consecutive_failures = 0
 
     def _compute_wait_time(
         self, localized_now: datetime.datetime, data_end: datetime.datetime | None
@@ -295,12 +322,21 @@ class APIWorker(threading.Thread):
             response = self._get_tempo_data(start, end)
             handle_api_errors(response)
         except requests.exceptions.RequestException as requests_exception:
-            _LOGGER.error("API request failed: %s", requests_exception)
+            # Transient: network-level failure, heals on retry
+            self._record_failure("API request failed: %s", requests_exception)
             return None
         except OAuth2Error as oauth_execption:
+            # Permanent: requires user action (credentials), always log as error
             _LOGGER.error("API request failed with OAuth2 error: %s", oauth_execption)
             return None
-        except (BadRequest, ServerError, UnexpectedError) as http_error:
+        except ServerError as http_error:
+            # Transient: server-side 5xx errors, may heal on retry
+            self._record_failure(
+                "API request failed with HTTP error code: %s", http_error
+            )
+            return None
+        except (BadRequest, UnexpectedError) as http_error:
+            # Permanent/actionable: HTTP 4xx and undocumented codes, always log as error
             _LOGGER.error("API request failed with HTTP error code: %s", http_error)
             return None
         try:
@@ -364,6 +400,8 @@ class APIWorker(threading.Thread):
                         repr(key_error),
                         tempo_day,
                     )
+        # Record successful fetch (resets transient failure streak)
+        self._record_success()
         # Save data in memory
         self._tempo_days_time = tempo_days_time
         self._tempo_days_date = time_days_date
