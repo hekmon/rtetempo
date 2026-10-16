@@ -389,7 +389,7 @@ class DaysLeft(SensorEntity):
             if tempo_day.Start >= cycle_end:
                 continue
             if tempo_day.Start < cycle_start:
-                break
+                continue
             if tempo_day.Value == API_VALUE_BLUE:
                 nb_blue_days += 1
             elif tempo_day.Value == API_VALUE_WHITE:
@@ -482,7 +482,7 @@ class DaysUsed(SensorEntity):
             if tempo_day.Start >= cycle_end:
                 continue
             if tempo_day.Start < cycle_start:
-                break
+                continue
             if tempo_day.Value == API_VALUE_BLUE:
                 nb_blue_days += 1
             elif tempo_day.Value == API_VALUE_WHITE:

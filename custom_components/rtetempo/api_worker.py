@@ -5,6 +5,7 @@ import datetime
 import logging
 import random
 import threading
+import traceback
 from typing import NamedTuple
 
 from oauthlib.oauth2 import BackendApplicationClient, TokenExpiredError
@@ -92,16 +93,26 @@ class APIWorker(threading.Thread):
         _LOGGER.info("Starting thread")
         stop = False
         while not stop:
-            # First auth
-            if self._oauth.token == {}:
-                self._get_access_token()
-            # Fetch data
-            localized_now = datetime.datetime.now(FRANCE_TZ)
-            end = self._update_tempo_days(
-                localized_now, start_before_days=364, end_after_days=2
-            )
-            # Wait depending on last result fetched
-            wait_time = self._compute_wait_time(localized_now, end)
+            try:
+                localized_now = datetime.datetime.now(FRANCE_TZ)
+                # First auth
+                if self._oauth.token == {} and not self._get_access_token():
+                    # Token fetch failed (already logged): skip API calls for
+                    # this cycle (fixed 10 minutes retry below)
+                    end = None
+                else:
+                    # Fetch data
+                    end = self._update_tempo_days(
+                        localized_now, start_before_days=364, end_after_days=2
+                    )
+                # Wait depending on last result fetched
+                wait_time = self._compute_wait_time(localized_now, end)
+            except Exception:  # broad catch on purpose: the worker thread must not die
+                # Unexpected error during this cycle: treat as transient and retry
+                self._record_failure(
+                    "Unexpected error during update cycle:\n%s", traceback.format_exc()
+                )
+                wait_time = datetime.timedelta(minutes=10)
             stop = self._stopevent.wait(float(wait_time.seconds))
         # stopping thread
         _LOGGER.info("Thread stopped")
@@ -257,18 +268,28 @@ class APIWorker(threading.Thread):
         # all good
         return wait_time
 
-    def _get_access_token(self):
+    def _get_access_token(self) -> bool:
+        """Fetch a new OAuth2 access token, return True on success.
+
+        Network failures are transient and silenced after the first occurrence
+        (via _record_failure); OAuth2 errors (bad credentials) are permanent
+        and always logged at error level.
+        """
         _LOGGER.debug("Requesting access token")
         try:
             headers = {
                 "User-Agent": USER_AGENT,
             }
             self._oauth.fetch_token(token_url=API_TOKEN_ENDPOINT, auth=self._auth, headers=headers)
-        except (
-            requests.exceptions.RequestException,
-            OAuth2Error,
-        ) as requests_exception:
-            _LOGGER.error("Fetching OAuth2 access token failed: %s", requests_exception)
+        except requests.exceptions.RequestException as requests_exception:
+            # Transient: network-level failure, heals on retry
+            self._record_failure("Fetching OAuth2 access token failed: %s", requests_exception)
+            return False
+        except OAuth2Error as oauth_exception:
+            # Permanent: requires user action (credentials), always log as error
+            _LOGGER.error("Fetching OAuth2 access token failed: %s", oauth_exception)
+            return False
+        return True
 
     def _get_tempo_data(
         self, start: datetime.datetime, end: datetime.datetime
@@ -346,10 +367,20 @@ class APIWorker(threading.Thread):
                 "JSON parsing error on a HTTP 200 request (%s):\n%s", exc, response.text
             )
             return None
+        try:
+            raw_tempo_days = payload[API_KEY_RESULTS][API_KEY_VALUES]
+        except (KeyError, TypeError) as unexpected_payload:
+            # Unexpected payload shape on a HTTP 200: treat as transient/recoverable
+            self._record_failure(
+                "Unexpected API payload structure (%s): %s",
+                unexpected_payload,
+                response.text,
+            )
+            return None
         # Parse datetimes and fix time for start and end dates
         tempo_days_time: list[TempoDay] = []
         time_days_date: list[TempoDay] = []
-        for tempo_day in payload[API_KEY_RESULTS][API_KEY_VALUES]:
+        for tempo_day in raw_tempo_days:
             try:
                 tempo_days_time.append(
                     TempoDay(
@@ -372,7 +403,7 @@ class APIWorker(threading.Thread):
                     )
                 )
             except KeyError as key_error:
-                if tempo_day[API_KEY_START] == "2022-12-28T00:00:00+01:00":
+                if tempo_day.get(API_KEY_START) == "2022-12-28T00:00:00+01:00":
                     # RTE has issued a warning concerning this day missing data on their API: its blue
                     tempo_days_time.append(
                         TempoDay(
@@ -472,14 +503,18 @@ def handle_api_errors(response: requests.Response):
     elif response.status_code == 404:
         raise BadRequest(response.status_code, "Not Found")
     elif response.status_code == 408:
-        raise BadRequest(response.status_code, "Request Time-out")
+        # Transient by nature (request timeout), retried on the fixed schedule
+        raise ServerError(response.status_code, "Request Time-out")
     elif response.status_code == 413:
         raise BadRequest(response.status_code, "Request Entity Too Large")
     elif response.status_code == 414:
         raise BadRequest(response.status_code, "Request-URI Too Long")
     elif response.status_code == 429:
-        raise BadRequest(response.status_code, "Too Many Requests")
-    elif response.status_code == 500:
+        # Transient by nature (rate limiting/backoff), retried on the fixed schedule
+        raise ServerError(response.status_code, "Too Many Requests")
+    elif 500 <= response.status_code < 600:
+        # Any server-side error is transient: try to decode the JSON error
+        # payload for a meaningful message, fallback on the raw response text
         try:
             payload = response.json()
             raise ServerError(
@@ -495,10 +530,6 @@ def handle_api_errors(response: requests.Response):
                 response.status_code,
                 f"Failed to decode access JSON error payload: {response.text}",
             ) from exc
-    elif response.status_code == 503:
-        raise ServerError(response.status_code, "Service Unavailable")
-    elif response.status_code == 509:
-        raise ServerError(response.status_code, "Bandwidth Limit Exceeded")
     elif response.status_code != 200:
         raise UnexpectedError(
             response.status_code, f"Unexpected HTTP code: {response.text}"
@@ -506,7 +537,7 @@ def handle_api_errors(response: requests.Response):
 
 
 class BadRequest(Exception):
-    """Represents a API HTTP 4xx error."""
+    """Represents a permanent API HTTP 4xx error."""
 
     def __init__(self, code: int, message: str) -> None:
         """Initialize the BadRequest exception."""
@@ -515,7 +546,7 @@ class BadRequest(Exception):
 
 
 class ServerError(Exception):
-    """Represents a API HTTP 5xx error."""
+    """Represents a transient API error (HTTP 5xx, or 408/429)."""
 
     def __init__(self, code: int, message: str) -> None:
         """Initialize the ServerError exception."""
