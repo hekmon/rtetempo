@@ -1,7 +1,10 @@
 {
     "config": {
         "abort": {
-            "already_configured": "Ce Client ID est déjà configuré"
+            "already_configured": "Ce Client ID est déjà configuré",
+            "reauth_successful": "La ré-authentification a réussi",
+            "reconfigure_successful": "La reconfiguration a réussi",
+            "unknown_entry": "L'entrée de configuration n'existe plus, merci de recharger l'intégration"
         },
         "error": {
             "network_error": "Une erreur réseau est survenue, merci de vérifier les logs",
@@ -11,12 +14,26 @@
             "http_unexpected_error": "Une erreur HTTP inattendue est survenue, merci de vérifier les logs"
         },
         "step": {
+            "reauth_confirm": {
+                "data": {
+                    "client_id": "Client ID",
+                    "client_secret": "Client Secret"
+                },
+                "description": "Les identifiants ont été rejetés par l'API RTE. Veuillez fournir de nouveaux [identifiants d'application]({rte_apps_url}). Si l'application précédente a été supprimée sur le portail RTE, merci d'en créer d'abord une nouvelle."
+            },
+            "reconfigure": {
+                "data": {
+                    "client_id": "Client ID",
+                    "client_secret": "Client Secret"
+                },
+                "description": "Veuillez mettre à jour vos [identifiants d'application]({rte_apps_url}) pour l'API RTE."
+            },
             "user": {
                 "data": {
                     "client_id": "Client ID",
                     "client_secret": "Client Secret"
                 },
-                "description": "Veuillez remplir vos [identifiants d'application](https://data.rte-france.com/group/guest/apps) RTE API."
+                "description": "Veuillez remplir vos [identifiants d'application]({rte_apps_url}) RTE API."
             }
         }
     },

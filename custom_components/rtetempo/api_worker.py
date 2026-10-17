@@ -6,10 +6,10 @@ import logging
 import random
 import threading
 import traceback
-from typing import NamedTuple
+from typing import Callable, NamedTuple
 
 from oauthlib.oauth2 import BackendApplicationClient, TokenExpiredError
-from oauthlib.oauth2.rfc6749.errors import OAuth2Error
+from oauthlib.oauth2.rfc6749.errors import InvalidClientError, OAuth2Error
 import requests
 from requests.auth import HTTPBasicAuth
 from requests_oauthlib import OAuth2Session
@@ -56,8 +56,20 @@ class TempoDay(NamedTuple):
 class APIWorker(threading.Thread):
     """API Worker is an autonomous thread querying, parsing an caching the RTE Tempo calendar API in an optimal way."""
 
-    def __init__(self, client_id: str, client_secret: str, adjusted_days: bool) -> None:
-        """Initialize the API Worker thread."""
+    def __init__(
+        self,
+        client_id: str,
+        client_secret: str,
+        adjusted_days: bool,
+        reauth_trigger: Callable[[], None] | None = None,
+    ) -> None:
+        """Initialize the API Worker thread.
+
+        reauth_trigger is an optional thread safe callback invoked at most once
+        per credentials failure streak, only on credential rejection by the API
+        (invalid_client, RFC 6749 section 5.2) when a user action (new
+        credentials) is required; it never fires on transient OAuth2 errors.
+        """
         # Thread
         self._stopevent = threading.Event()
         # OAuth
@@ -69,8 +81,15 @@ class APIWorker(threading.Thread):
         self._tempo_days_time: list[TempoDay] = []
         self._tempo_days_date: list[TempoDay] = []
         self.adjusted_days: bool = adjusted_days
+        # Credentials the worker was built with: public read-only attributes
+        # letting the config entry update listener detect credential changes
+        self.client_id: str = client_id
+        self.client_secret: str = client_secret
         # Failure tracking for log noise reduction
         self._consecutive_failures = 0
+        # Reauth tracking (credentials rejected by the API)
+        self._reauth_trigger = reauth_trigger
+        self._reauth_triggered = False
         # Init parent thread class
         super().__init__(name="RTE Tempo API Worker")
 
@@ -155,6 +174,9 @@ class APIWorker(threading.Thread):
                 "API recovered after %d failed attempt(s)", self._consecutive_failures
             )
             self._consecutive_failures = 0
+        # API is healthy again: allow a new reauth trigger on a future
+        # credentials failure streak
+        self._reauth_triggered = False
 
     def _compute_wait_time(
         self, localized_now: datetime.datetime, data_end: datetime.datetime | None
@@ -286,8 +308,20 @@ class APIWorker(threading.Thread):
             self._record_failure("Fetching OAuth2 access token failed: %s", requests_exception)
             return False
         except OAuth2Error as oauth_exception:
-            # Permanent: requires user action (credentials), always log as error
+            # Always log as error (issue #75 semantics for OAuth2 errors)
             _LOGGER.error("Fetching OAuth2 access token failed: %s", oauth_exception)
+            # The credentials are rejected by the API (invalid_client, RFC 6749
+            # section 5.2): request a Home Assistant reauth flow so the user can
+            # provide new ones (only once per failure streak: the flag is reset
+            # when the API recovers). Transient OAuth2 errors (e.g. server
+            # errors) are only logged above, never triggering reauth.
+            if (
+                isinstance(oauth_exception, InvalidClientError)
+                and not self._reauth_triggered
+                and self._reauth_trigger is not None
+            ):
+                self._reauth_triggered = True
+                self._reauth_trigger()
             return False
         return True
 

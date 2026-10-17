@@ -17,11 +17,27 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up rtetempo from a config entry."""
+    # Build a thread safe trigger to request a reauth flow: the API worker runs
+    # in its own thread so the call must be scheduled on the event loop with
+    # hass.add_job (documented thread safe)
+
+    def reauth_trigger() -> None:
+        """Request a Home Assistant reauth flow (thread safe)."""
+
+        async def async_start_reauth() -> None:
+            """Start the reauth flow from the event loop."""
+            # ConfigEntry.async_start_reauth is a sync callback but must run in
+            # the event loop, hence this coroutine scheduled via hass.add_job
+            entry.async_start_reauth(hass)
+
+        hass.add_job(async_start_reauth)
+
     # Create the serial reader thread and start it
     api_worker = APIWorker(
         client_id=str(entry.data.get(CONFIG_CLIENT_ID)),
         client_secret=str(entry.data.get(CONFIG_CLIEND_SECRET)),
         adjusted_days=bool(entry.options.get(OPTION_ADJUSTED_DAYS)),
+        reauth_trigger=reauth_trigger,
     )
     api_worker.start()
     hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, api_worker.signalstop)
@@ -48,7 +64,11 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
-    """Handle options update."""
+    """Handle config entry updates: schedule reload on credentials change.
+
+    As an integration with an update listener, this listener owns reload
+    scheduling (see HA's async_update_reload_and_abort usage report).
+    """
     # Retrieved the API Worker for this config entry
     try:
         serial_reader = hass.data[DOMAIN][entry.entry_id]
@@ -57,6 +77,14 @@ async def update_listener(hass: HomeAssistant, entry: ConfigEntry):
             "Can not update options for %s: failed to get the API Worker object",
             entry.title,
         )
+        return
+    # Credentials changed: the running worker was built with the old ones so
+    # the entry must be reloaded to rebuild it with the new credentials
+    if (
+        str(entry.data.get(CONFIG_CLIENT_ID)) != serial_reader.client_id
+        or str(entry.data.get(CONFIG_CLIEND_SECRET)) != serial_reader.client_secret
+    ):
+        hass.config_entries.async_schedule_reload(entry.entry_id)
         return
     # Update its options
     serial_reader.update_options(entry.options.get(OPTION_ADJUSTED_DAYS))

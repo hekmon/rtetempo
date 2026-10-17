@@ -1,7 +1,10 @@
 {
     "config": {
         "abort": {
-            "already_configured": "Integration is already configured"
+            "already_configured": "Integration is already configured",
+            "reauth_successful": "Re-authentication was successful",
+            "reconfigure_successful": "Re-configuration was successful",
+            "unknown_entry": "The config entry is gone, please reload the integration"
         },
         "error": {
             "network_error": "A network error occured, please check the logs",
@@ -11,12 +14,26 @@
             "http_unexpected_error": "An unexpected HTTP error occured, please check the logs"
         },
         "step": {
+            "reauth_confirm": {
+                "data": {
+                    "client_id": "Client ID",
+                    "client_secret": "Client Secret"
+                },
+                "description": "The credentials were rejected by the RTE API. Please provide new [Application credentials]({rte_apps_url}). If the previous application was deleted on the RTE portal, please create a new one first."
+            },
+            "reconfigure": {
+                "data": {
+                    "client_id": "Client ID",
+                    "client_secret": "Client Secret"
+                },
+                "description": "Please update your RTE API [Application credentials]({rte_apps_url})"
+            },
             "user": {
                 "data": {
                     "client_id": "Client ID",
                     "client_secret": "Client Secret"
                 },
-                "description": "Please fill in your RTE API [Application credentials](https://data.rte-france.com/group/guest/apps)"
+                "description": "Please fill in your RTE API [Application credentials]({rte_apps_url})"
             }
         }
     },
