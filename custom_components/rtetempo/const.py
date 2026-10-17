@@ -9,6 +9,9 @@ DOMAIN = "rtetempo"
 CONFIG_CLIENT_ID = "client_id"
 CONFIG_CLIEND_SECRET = "client_secret"
 OPTION_ADJUSTED_DAYS = "adjusted_days"
+# Injected into config flow descriptions as a placeholder because hassfest
+# forbids raw URLs in translation strings
+RTE_APPS_URL = "https://data.rte-france.com/group/guest/apps"
 
 
 # Service Device
